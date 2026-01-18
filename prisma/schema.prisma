@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id        String    @id @default(uuid())
+  name      String
+  date      DateTime
+  category  String?
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Booking {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique
+  eventId       String?
+  event         Event?   @relation(fields: [eventId], references: [id])
+  
+  // Customer info
+  name          String
+  email         String
+  country       String?
+  phone         String?
+  notes         String?
+  adminNotes    String?
+  
+  // Payment info
+  status        String   // Confirmed, Pending, Invited
+  paymentMethod String?  // Cash, Card, Transfer, etc
+  price         Float
+  discount      Float    @default(0)
+  tax           Float    @default(0)
+  total         Float
+  deposit       Float    @default(0)
+  depositPercent Boolean @default(false)
+  toPay         Float
+  coupon        String?
+  
+  // Guest list and gifts
+  guestList     String?
+  gifts         String?
+  booker        String?
+  
+  // Communication
+  emailLanguage String   @default("en") // en, it, fr, es
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

@@ -1,0 +1,34 @@
+{
+  "sidebar": {
+    "brand": "BookingCilex",
+    "dashboard": "Tableau de bord",
+    "bookings": "Réservations",
+    "profile": "Mon Profil",
+    "logout": "Déconnexion"
+  },
+  "header": {
+    "home": "Accueil",
+    "breadcrumb": "Tableau de bord"
+  },
+  "greeting": "Bonjour Ignazio Office Cilex 2025!",
+  "bookingResumes": "Résumé des Réservations",
+  "confirmedAndPaid": "Confirmé et Payé",
+  "pendingAndPaid": "En attente et Payé",
+  "invited": "Invité",
+  "pendingAndNotPaid": "En attente et Non Payé",
+  "filters": {
+    "category": "Choisir une Catégorie",
+    "dateFrom": "Date de début",
+    "dateTo": "Date de fin",
+    "music": "Musique",
+    "party": "Soirée",
+    "conference": "Conférence"
+  },
+  "buttons": {
+    "bookings": "Réservations",
+    "addBooking": "Ajouter une réservation",
+    "myProfile": "Mon Profil",
+    "logout": "Déconnexion"
+  },
+  "language": "Langue"
+}
