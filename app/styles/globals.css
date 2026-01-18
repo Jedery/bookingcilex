@@ -691,3 +691,112 @@ table th {
   font-weight: 600;
   text-align: center;
 }
+/* Mobile Menu Button */
+.mobile-menu-button {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(200, 150, 100, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  color: #c89664;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-button:hover {
+  background: rgba(200, 150, 100, 0.15);
+  border-color: #c89664;
+  box-shadow: 0 0 20px rgba(200, 150, 100, 0.2);
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .sidebar-mobile-open {
+    left: 0;
+  }
+
+  .main-content {
+    padding: 80px 20px 20px;
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .footer-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-cards-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .filters-section {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 260px;
+  }
+
+  .main-content {
+    padding: 70px 15px 15px;
+  }
+
+  .sidebar-brand-logo {
+    font-size: 28px;
+  }
+
+  .button-large {
+    padding: 20px 15px;
+    font-size: 14px;
+  }
+}

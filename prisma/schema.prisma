@@ -50,7 +50,7 @@ model Booking {
   adminNotes    String?
   
   // Payment info
-  status        String   // Confirmed, Pending, Invited
+  status        String   // Confirmed, Pending, Invited, Cancelled
   paymentMethod String?  // Cash, Card, Transfer, etc
   price         Float
   discount      Float    @default(0)
@@ -60,6 +60,12 @@ model Booking {
   depositPercent Boolean @default(false)
   toPay         Float
   coupon        String?
+  
+  // Sales tracking
+  soldBy        String?  // User ID of the promoter/salesperson
+  soldByName    String?  // Name for quick reference
+  confirmedAt   DateTime? // When status changed to Confirmed
+  cancelledAt   DateTime? // When booking was cancelled
   
   // Guest list and gifts
   guestList     String?

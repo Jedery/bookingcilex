@@ -3,12 +3,13 @@
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight, Menu, X } from 'lucide-react';
 
 export default function Sidebar({ t }: { t: (key: string) => string }) {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [bookingsOpen, setBookingsOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -16,7 +17,25 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
   };
 
   return (
-    <div className="sidebar">
+    <>
+      {/* Mobile Menu Button */}
+      <button 
+        className="mobile-menu-button"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle menu"
+      >
+        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="sidebar-overlay"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      <div className={`sidebar ${mobileMenuOpen ? 'sidebar-mobile-open' : ''}`}>
       <div className="sidebar-brand">
         <a href="/" style={{ textDecoration: 'none', color: 'inherit', textAlign: 'center' }}>
           <div className="sidebar-brand-logo">CILEX</div>
@@ -143,6 +162,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
           </a>
         </li>
       </ul>
-    </div>
+      </div>
+    </>
   );
 }
