@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useTranslation } from '../../i18n/useTranslation';
 
 interface Booking {
@@ -20,7 +21,7 @@ interface Booking {
 }
 
 export default function ListBookings() {
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,27 +59,30 @@ export default function ListBookings() {
       <Sidebar t={t} />
       <div className="main-content">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-          <h1>Bookings List</h1>
-          <a 
+          <h1>{t('listBooking.title')}</h1>
+          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+            <LanguageSwitcher language={language} setLanguage={setLanguage} />
+            <a 
             href="/bookings/add" 
             className="button button-primary"
             style={{ textDecoration: 'none' }}
           >
-            ➕ Add New Booking
+            ➕ {t('listBooking.addNew')}
           </a>
+          </div>
         </div>
 
         {loading ? (
-          <p>Loading bookings...</p>
+          <p>{t('listBooking.loading')}</p>
         ) : bookings.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-            <p style={{ fontSize: '18px', color: '#999' }}>No bookings yet</p>
+            <p style={{ fontSize: '18px', color: '#999' }}>{t('listBooking.noBookings')}</p>
             <a 
               href="/bookings/add" 
               className="button button-primary"
               style={{ marginTop: '20px', display: 'inline-flex', textDecoration: 'none' }}
             >
-              Create your first booking
+              {t('listBooking.createFirst')}
             </a>
           </div>
         ) : (
@@ -86,14 +90,14 @@ export default function ListBookings() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #2a3a52' }}>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Booking ID</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Event</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Name</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Email</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
-                  <th style={{ padding: '15px', textAlign: 'right' }}>Total €</th>
-                  <th style={{ padding: '15px', textAlign: 'right' }}>To Pay €</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Date</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.bookingId')}</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.event')}</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.name')}</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.email')}</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.status')}</th>
+                  <th style={{ padding: '15px', textAlign: 'right' }}>{t('listBooking.total')}</th>
+                  <th style={{ padding: '15px', textAlign: 'right' }}>{t('listBooking.toPay')}</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>{t('listBooking.date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +116,7 @@ export default function ListBookings() {
                           <div style={{ fontSize: '12px', color: '#999' }}>{booking.event.category}</div>
                         </div>
                       ) : (
-                        <span style={{ color: '#999' }}>No event</span>
+                        <span style={{ color: '#999' }}>{t('listBooking.noEvent')}</span>
                       )}
                     </td>
                     <td style={{ padding: '15px' }}>{booking.name}</td>

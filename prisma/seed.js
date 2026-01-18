@@ -1,7 +1,34 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
+  console.log('🌱 Starting seed...');
+
+  // Create superadmin user if not exists
+  const superAdminEmail = 'ignazioibiza@gmail.com';
+  const existingSuperAdmin = await prisma.user.findUnique({
+    where: { email: superAdminEmail },
+  });
+
+  if (!existingSuperAdmin) {
+    const hashedPassword = await bcrypt.hash('Cilexstart2026', 10);
+    await prisma.user.create({
+      data: {
+        email: superAdminEmail,
+        password: hashedPassword,
+        name: 'Ignazio Ibiza',
+        role: 'SuperAdmin',
+        isActive: true,
+      },
+    });
+    console.log('✅ Created SuperAdmin user:');
+    console.log('   Email: ignazioibiza@gmail.com');
+    console.log('   Password: Cilexstart2026');
+  } else {
+    console.log('ℹ️  SuperAdmin user already exists');
+  }
+
   // Clear existing events
   await prisma.event.deleteMany();
 

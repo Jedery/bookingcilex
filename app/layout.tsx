@@ -1,4 +1,5 @@
 import './styles/globals.css';
+import { AuthProvider } from './context/AuthContext';
 
 export const metadata = {
   title: "BookingCilex - Event Booking",
@@ -13,7 +14,9 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

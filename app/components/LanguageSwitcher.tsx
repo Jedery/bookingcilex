@@ -16,13 +16,16 @@ export default function LanguageSwitcher({
         value={language}
         onChange={(e) => setLanguage(e.target.value as 'en' | 'it' | 'fr' | 'es')}
         style={{
-          padding: '8px 12px',
-          backgroundColor: '#1a2540',
-          border: '1px solid #2a3a52',
-          borderRadius: '6px',
-          color: '#fff',
-          fontSize: '14px',
-          cursor: 'pointer'
+          padding: '10px 16px',
+          background: 'rgba(26, 37, 64, 0.6)',
+          border: '1px solid rgba(200, 150, 100, 0.2)',
+          borderRadius: '8px',
+          color: '#e8e8e8',
+          fontSize: '13px',
+          fontWeight: '300',
+          letterSpacing: '1px',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
         }}
       >
         <option value="en">🇬🇧 English</option>

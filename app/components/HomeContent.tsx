@@ -5,9 +5,11 @@ import Sidebar from './Sidebar';
 import BookingResumes from './BookingResumes';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/useTranslation';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomeContent() {
   const { t, language, setLanguage } = useTranslation();
+  const { user } = useAuth();
   const now = new Date();
   const day = now.toLocaleDateString('en-US', { weekday: 'long' });
   const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -25,10 +27,12 @@ export default function HomeContent() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flex: 1 }}>
             <div className="user-info">
-              <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{t('greeting')}</div>
+              <div style={{ fontSize: '18px', fontWeight: '300', color: '#c89664' }}>
+                {t('greeting')}, {user?.name || 'Guest'}
+              </div>
               <div style={{ fontSize: '14px', marginTop: '5px' }}>
                 <div>{day}</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{time}</div>
+                <div style={{ fontSize: '24px', fontWeight: '200' }}>{time}</div>
                 <div className="user-info-time">{fullDate}</div>
               </div>
             </div>
