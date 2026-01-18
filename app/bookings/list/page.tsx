@@ -13,6 +13,10 @@ interface Booking {
   total: number;
   toPay: number;
   createdAt: string;
+  event?: {
+    name: string;
+    category: string;
+  };
 }
 
 export default function ListBookings() {
@@ -83,6 +87,7 @@ export default function ListBookings() {
               <thead>
                 <tr style={{ borderBottom: '2px solid #2a3a52' }}>
                   <th style={{ padding: '15px', textAlign: 'left' }}>Booking ID</th>
+                  <th style={{ padding: '15px', textAlign: 'left' }}>Event</th>
                   <th style={{ padding: '15px', textAlign: 'left' }}>Name</th>
                   <th style={{ padding: '15px', textAlign: 'left' }}>Email</th>
                   <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
@@ -99,6 +104,16 @@ export default function ListBookings() {
                   >
                     <td style={{ padding: '15px' }}>
                       <strong>{booking.bookingId}</strong>
+                    </td>
+                    <td style={{ padding: '15px' }}>
+                      {booking.event ? (
+                        <div>
+                          <div>{booking.event.name}</div>
+                          <div style={{ fontSize: '12px', color: '#999' }}>{booking.event.category}</div>
+                        </div>
+                      ) : (
+                        <span style={{ color: '#999' }}>No event</span>
+                      )}
                     </td>
                     <td style={{ padding: '15px' }}>{booking.name}</td>
                     <td style={{ padding: '15px' }}>{booking.email}</td>

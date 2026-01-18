@@ -24,6 +24,11 @@ export async function POST(request: Request) {
     // Generate unique booking ID
     const bookingId = `BK${Date.now()}`;
     
+    const price = parseFloat(body.price) || 0;
+    const deposit = parseFloat(body.deposit) || 0;
+    const total = price;
+    const toPay = total - deposit;
+    
     const booking = await prisma.booking.create({
       data: {
         bookingId,
@@ -35,13 +40,13 @@ export async function POST(request: Request) {
         adminNotes: body.adminNotes,
         status: body.status || 'Pending',
         paymentMethod: body.paymentMethod,
-        price: parseFloat(body.price) || 0,
-        discount: parseFloat(body.discount) || 0,
-        tax: parseFloat(body.tax) || 0,
-        total: parseFloat(body.total) || 0,
-        deposit: parseFloat(body.deposit) || 0,
+        price: price,
+        discount: 0,
+        tax: 0,
+        total: total,
+        deposit: deposit,
         depositPercent: body.depositPercent || false,
-        toPay: parseFloat(body.toPay) || 0,
+        toPay: toPay,
         coupon: body.coupon,
         guestList: body.guestList,
         gifts: body.gifts,

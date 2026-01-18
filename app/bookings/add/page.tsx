@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import { useTranslation } from '../../i18n/useTranslation';
@@ -9,6 +9,8 @@ export default function AddBooking() {
   const router = useRouter();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [timeFilter, setTimeFilter] = useState('');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -20,8 +22,6 @@ export default function AddBooking() {
     status: '',
     paymentMethod: '',
     price: '',
-    discount: '',
-    tax: '',
     deposit: '',
     depositPercent: false,
     coupon: '',
@@ -29,6 +29,7 @@ export default function AddBooking() {
     gifts: '',
     booker: '',
     emailLanguage: 'en',
+    eventId: '',
   });
 
   const [languageToggles, setLanguageToggles] = useState({
@@ -38,11 +39,26 @@ export default function AddBooking() {
     fr: false,
   });
 
+  useEffect(() => {
+    fetchEvents();
+  }, [timeFilter]);
+
+  const fetchEvents = async () => {
+    try {
+      const url = timeFilter 
+        ? `/api/events?category=${encodeURIComponent(timeFilter)}`
+        : '/api/events';
+      const response = await fetch(url);
+      const data = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
   const calculateTotal = () => {
     const price = parseFloat(formData.price) || 0;
-    const discount = parseFloat(formData.discount) || 0;
-    const tax = parseFloat(formData.tax) || 0;
-    return price - discount + tax;
+    return price;
   };
 
   const calculateToPay = () => {
@@ -97,14 +113,32 @@ export default function AddBooking() {
             {/* Left Column */}
             <div className="card">
               <div className="filter-group">
-                <label>Date</label>
-                <input type="date" style={{ width: '100%' }} />
+                <label>Filter by Time</label>
+                <select 
+                  style={{ width: '100%' }}
+                  value={timeFilter}
+                  onChange={(e) => setTimeFilter(e.target.value)}
+                >
+                  <option value="">All Events</option>
+                  <option value="10:00 AM">10:00 AM</option>
+                  <option value="10:00 PM">10:00 PM</option>
+                </select>
               </div>
 
               <div className="filter-group" style={{ marginTop: '20px' }}>
                 <label>Choose Event</label>
-                <select style={{ width: '100%' }}>
-                  <option>-- Choose Event --</option>
+                <select 
+                  style={{ width: '100%' }}
+                  value={formData.eventId}
+                  onChange={(e) => setFormData({ ...formData, eventId: e.target.value })}
+                  required
+                >
+                  <option value="">-- Choose Event --</option>
+                  {events.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.name} - {new Date(event.date).toLocaleDateString()} ({event.category})
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -151,39 +185,6 @@ export default function AddBooking() {
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   required
-                />
-              </div>
-
-              <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label>Discount €</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  style={{ width: '100%' }}
-                  value={formData.discount}
-                  onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-                />
-              </div>
-
-              <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label>Impostos €</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  style={{ width: '100%' }}
-                  value={formData.tax}
-                  onChange={(e) => setFormData({ ...formData, tax: e.target.value })}
-                />
-              </div>
-
-              <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label>Total €</label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  style={{ width: '100%' }}
-                  value={calculateTotal()}
-                  disabled
                 />
               </div>
 
