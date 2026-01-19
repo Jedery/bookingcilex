@@ -734,6 +734,11 @@ table th {
   display: block;
 }
 
+/* Mobile Greeting */
+.mobile-greeting {
+  display: none !important;
+}
+
 /* Search and User Info - Desktop Only */
 .search-desktop {
   display: block;
@@ -779,9 +784,14 @@ table th {
 
   .header {
     flex-direction: row !important;
-    justify-content: flex-end !important;
-    gap: 12px;
+    justify-content: space-between !important;
+    gap: 16px;
     align-items: center;
+  }
+
+  /* Mostra saluto personalizzato su mobile */
+  .mobile-greeting {
+    display: flex !important;
   }
 
   /* Nascondi search su mobile */
@@ -800,7 +810,7 @@ table th {
   }
 
   .language-switcher-mobile {
-    display: block !important;
+    display: flex !important;
   }
 
   .footer-buttons {

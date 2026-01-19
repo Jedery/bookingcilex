@@ -149,22 +149,22 @@ export default function HomeContent() {
       <div className="main-content">
         <div className="header" style={{ 
           display: 'flex', 
-          justifyContent: 'flex-end', 
+          justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '30px',
         }}>
-          {/* Desktop: Mostra tutto */}
+          {/* Desktop: Search + Language + User */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '20px',
             width: '100%',
+            flex: 1,
           }}>
             {/* Search Bar - Solo Desktop */}
             <div style={{ 
               flex: 1, 
               maxWidth: '400px',
-              display: 'block',
             }}
               className="search-desktop"
             >
@@ -206,8 +206,56 @@ export default function HomeContent() {
               </div>
             </div>
 
-            {/* Language Switcher - Compatto per mobile */}
-            <div>
+            {/* Mobile: Saluto Personalizzato */}
+            <div className="mobile-greeting" style={{
+              display: 'none',
+              flex: 1,
+              alignItems: 'center',
+              gap: '12px',
+            }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #c89664 0%, #d4a574 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                fontWeight: '600',
+                color: '#0a0a0a',
+                border: '2px solid rgba(200, 150, 100, 0.5)',
+                boxShadow: '0 4px 12px rgba(200, 150, 100, 0.3)',
+              }}>
+                {user?.name?.charAt(0).toUpperCase() || 'G'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ 
+                  fontSize: '11px', 
+                  color: '#888',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontWeight: '600',
+                  marginBottom: '2px',
+                }}>
+                  Benvenuto
+                </div>
+                <div style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '600',
+                  color: '#fff',
+                  letterSpacing: '0.5px',
+                }}>
+                  {user?.name || 'Guest'}
+                </div>
+              </div>
+            </div>
+
+            {/* Language Switcher - Migliorato */}
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+            }}>
               <LanguageSwitcher language={language} setLanguage={setLanguage} />
             </div>
 
