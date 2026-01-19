@@ -50,7 +50,7 @@ export default function LanguageSwitcher({
         <option value="es">🇪🇸 Español</option>
       </select>
 
-      {/* Mobile: Solo bandiera più grande e stilata */}
+      {/* Mobile: Solo bandiera più grande e stilata - ALLINEATO */}
       <button
         onClick={() => {
           const langs: Language[] = ['it', 'en', 'fr', 'es'];
@@ -59,10 +59,10 @@ export default function LanguageSwitcher({
           setLanguage(langs[nextIndex]);
         }}
         style={{
-          padding: '8px 12px',
-          background: 'linear-gradient(135deg, rgba(26, 37, 64, 0.8), rgba(20, 30, 50, 0.9))',
-          border: '1.5px solid rgba(200, 150, 100, 0.3)',
-          borderRadius: '10px',
+          padding: '0',
+          background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.6), rgba(15, 15, 18, 0.8))',
+          border: '1px solid rgba(200, 150, 100, 0.2)',
+          borderRadius: '12px',
           color: '#e8e8e8',
           fontSize: '24px',
           cursor: 'pointer',
@@ -70,14 +70,25 @@ export default function LanguageSwitcher({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          minWidth: '56px',
-          minHeight: '44px',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+          width: '52px',
+          height: '52px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+          flexShrink: 0,
         }}
         className="language-switcher-mobile"
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.6)';
+          e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.4)';
           e.currentTarget.style.transform = 'scale(1.05)';
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(200, 150, 100, 0.2)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.2)';
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+        }}
+      >
+        {FLAGS[language]}
+      </button>
           e.currentTarget.style.boxShadow = '0 6px 16px rgba(200, 150, 100, 0.3)';
         }}
         onMouseLeave={(e) => {

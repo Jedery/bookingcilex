@@ -206,45 +206,55 @@ export default function HomeContent() {
               </div>
             </div>
 
-            {/* Mobile: Saluto Personalizzato */}
+            {/* Mobile: Saluto Personalizzato - Allineato perfettamente */}
             <div className="mobile-greeting" style={{
               display: 'none',
               flex: 1,
               alignItems: 'center',
-              gap: '12px',
+              gap: '10px',
+              padding: '6px 10px',
+              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.6), rgba(15, 15, 18, 0.8))',
+              border: '1px solid rgba(200, 150, 100, 0.2)',
+              borderRadius: '12px',
+              minHeight: '52px',
             }}>
               <div style={{
-                width: '48px',
-                height: '48px',
+                width: '40px',
+                height: '40px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #c89664 0%, #d4a574 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px',
-                fontWeight: '600',
+                fontSize: '18px',
+                fontWeight: '700',
                 color: '#0a0a0a',
-                border: '2px solid rgba(200, 150, 100, 0.5)',
-                boxShadow: '0 4px 12px rgba(200, 150, 100, 0.3)',
+                border: '2px solid rgba(200, 150, 100, 0.4)',
+                flexShrink: 0,
               }}>
                 {user?.name?.charAt(0).toUpperCase() || 'G'}
               </div>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ 
-                  fontSize: '11px', 
-                  color: '#888',
+                  fontSize: '9px', 
+                  color: '#999',
                   textTransform: 'uppercase',
-                  letterSpacing: '1px',
+                  letterSpacing: '1.2px',
                   fontWeight: '600',
                   marginBottom: '2px',
+                  lineHeight: 1,
                 }}>
                   Benvenuto
                 </div>
                 <div style={{ 
-                  fontSize: '16px', 
+                  fontSize: '15px', 
                   fontWeight: '600',
                   color: '#fff',
-                  letterSpacing: '0.5px',
+                  letterSpacing: '0.3px',
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}>
                   {user?.name || 'Guest'}
                 </div>
