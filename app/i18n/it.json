@@ -3,6 +3,8 @@
     "brand": "BookingCilex",
     "dashboard": "Dashboard",
     "bookings": "Prenotazioni",
+    "addBooking": "Aggiungi Prenotazione",
+    "listBookings": "Lista Prenotazioni",
     "myProfile": "Il Mio Profilo",
     "manageProfiles": "Gestisci Profili",
     "profile": "Mio Profilo",
@@ -12,6 +14,13 @@
   "header": {
     "home": "Home",
     "breadcrumb": "Dashboard"
+  },
+  "dashboard": {
+    "title": "Panoramica Dashboard",
+    "teamAnalysis": "Analisi Team",
+    "today": "Oggi",
+    "thisWeek": "Questa Settimana",
+    "thisMonth": "Questo Mese"
   },
   "greeting": "Ciao",
   "bookingResumes": "Riassunto Prenotazioni",

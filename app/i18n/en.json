@@ -2,14 +2,25 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Dashboard",
-    "bookings": "Bookings",    "myProfile": "My Profile",
-    "manageProfiles": "Manage Profiles",    "profile": "My Profile",
+    "bookings": "Bookings",
+    "addBooking": "Add Booking",
+    "listBookings": "List Bookings",
+    "myProfile": "My Profile",
+    "manageProfiles": "Manage Profiles",
+    "profile": "My Profile",
     "bookingConfig": "Booking Configuration",
     "logout": "Logout"
   },
   "header": {
     "home": "Home",
     "breadcrumb": "Dashboard"
+  },
+  "dashboard": {
+    "title": "Dashboard Overview",
+    "teamAnalysis": "Team Analysis",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month"
   },
   "greeting": "Hello",
   "bookingResumes": "Booking Resumes",

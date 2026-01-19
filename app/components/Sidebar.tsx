@@ -118,7 +118,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                 <span className="sidebar-icon">
                   <Plus size={18} strokeWidth={1.5} />
                 </span>
-                <span className="sidebar-text">Add Booking</span>
+                <span className="sidebar-text">{t('sidebar.addBooking')}</span>
               </a>
             </li>
             <li className="sidebar-item sidebar-subitem">
@@ -126,7 +126,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                 <span className="sidebar-icon">
                   <List size={18} strokeWidth={1.5} />
                 </span>
-                <span className="sidebar-text">List Bookings</span>
+                <span className="sidebar-text">{t('sidebar.listBookings')}</span>
               </a>
             </li>
           </>

@@ -310,7 +310,7 @@ export default function HomeContent() {
         }}
         className="dashboard-title"
         >
-          Dashboard Overview
+          {t('dashboard.title')}
         </h2>
 
         <KPICards cards={kpiCards} />
@@ -328,7 +328,7 @@ export default function HomeContent() {
             letterSpacing: '2px',
             color: '#fff',
           }}>
-            Analisi Team
+            {t('dashboard.teamAnalysis')}
           </h3>
           <select
             value={period}
@@ -345,9 +345,9 @@ export default function HomeContent() {
               outline: 'none',
             }}
           >
-            <option value="today">Oggi</option>
-            <option value="week">Questa Settimana</option>
-            <option value="month">Questo Mese</option>
+            <option value="today">{t('dashboard.today')}</option>
+            <option value="week">{t('dashboard.thisWeek')}</option>
+            <option value="month">{t('dashboard.thisMonth')}</option>
           </select>
         </div>
 

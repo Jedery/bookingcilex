@@ -2,14 +2,25 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Tableau de bord",
-    "bookings": "Réservations",    "myProfile": "Mon Profil",
-    "manageProfiles": "Gérer les Profils",    "profile": "Mon Profil",
+    "bookings": "Réservations",
+    "addBooking": "Ajouter une Réservation",
+    "listBookings": "Liste des Réservations",
+    "myProfile": "Mon Profil",
+    "manageProfiles": "Gérer les Profils",
+    "profile": "Mon Profil",
     "bookingConfig": "Configuration des Réservations",
     "logout": "Déconnexion"
   },
   "header": {
     "home": "Accueil",
     "breadcrumb": "Tableau de bord"
+  },
+  "dashboard": {
+    "title": "Vue d'ensemble du Tableau de bord",
+    "teamAnalysis": "Analyse d'Équipe",
+    "today": "Aujourd'hui",
+    "thisWeek": "Cette Semaine",
+    "thisMonth": "Ce Mois"
   },
   "greeting": "Bonjour",
   "bookingResumes": "Résumé des Réservations",

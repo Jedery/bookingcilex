@@ -2,14 +2,25 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Panel de Control",
-    "bookings": "Reservas",    "myProfile": "Mi Perfil",
-    "manageProfiles": "Gestionar Perfiles",    "profile": "Mi Perfil",
+    "bookings": "Reservas",
+    "addBooking": "Agregar Reserva",
+    "listBookings": "Lista de Reservas",
+    "myProfile": "Mi Perfil",
+    "manageProfiles": "Gestionar Perfiles",
+    "profile": "Mi Perfil",
     "bookingConfig": "Configuración de Reservas",
     "logout": "Cerrar Sesión"
   },
   "header": {
     "home": "Inicio",
     "breadcrumb": "Panel de Control"
+  },
+  "dashboard": {
+    "title": "Vista General del Panel",
+    "teamAnalysis": "Análisis del Equipo",
+    "today": "Hoy",
+    "thisWeek": "Esta Semana",
+    "thisMonth": "Este Mes"
   },
   "greeting": "Hola",
   "bookingResumes": "Resumen de Reservas",
