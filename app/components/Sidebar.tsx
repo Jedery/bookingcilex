@@ -149,6 +149,19 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
             </a>
           </li>
         )}
+        {(user?.role === 'SuperAdmin' || user?.role === 'Founder') && (
+          <li className="sidebar-item">
+            <a href="/settings/booking-config" className="sidebar-link" style={{ 
+              background: 'linear-gradient(135deg, rgba(200, 150, 100, 0.1), rgba(200, 150, 100, 0.05))',
+              border: '1px solid rgba(200, 150, 100, 0.2)',
+            }}>
+              <span className="sidebar-icon">
+                ⚙️
+              </span>
+              <span className="sidebar-text" style={{ fontWeight: '600' }}>Config Prenotazioni</span>
+            </a>
+          </li>
+        )}
         <li className="sidebar-item" style={{ marginTop: 'auto' }}>
           <a 
             href="#" 

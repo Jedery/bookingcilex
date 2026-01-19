@@ -30,6 +30,8 @@ model Event {
   name      String
   date      DateTime
   category  String?
+  basePrice Float     @default(0)
+  active    Boolean   @default(true)
   bookings  Booking[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -41,8 +43,15 @@ model Booking {
   eventId       String?
   event         Event?   @relation(fields: [eventId], references: [id])
   
-  // Customer info
+  // Event details (snapshot)
+  eventName     String?
+  eventDate     String?
+  eventTime     String?
+  
+  // Customer info (separated firstName/lastName)
   name          String
+  firstName     String?
+  lastName      String?
   email         String
   country       String?
   phone         String?
@@ -51,7 +60,7 @@ model Booking {
   
   // Payment info
   status        String   // Confirmed, Pending, Invited, Cancelled
-  paymentMethod String?  // Cash, Card, Transfer, etc
+  paymentMethod String?  // Cash, Card, Transfer, POS
   price         Float
   discount      Float    @default(0)
   tax           Float    @default(0)
@@ -62,19 +71,29 @@ model Booking {
   coupon        String?
   
   // Sales tracking
-  soldBy        String?  // User ID of the promoter/salesperson
+  soldBy        String?  // User role (superadmin, founder, manager, promoter)
   soldByName    String?  // Name for quick reference
   confirmedAt   DateTime? // When status changed to Confirmed
   cancelledAt   DateTime? // When booking was cancelled
   
-  // Guest list and gifts
+  // Guest list access
   guestList     String?
+  guestListAccess String? // VIP, Standard, Guest +1, None
   gifts         String?
   booker        String?
   
   // Communication
-  emailLanguage String   @default("en") // en, it, fr, es
+  emailLanguage String   @default("it") // en, it, fr, es
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model BookingConfig {
+  id                  String   @id @default(uuid())
+  key                 String   @unique // "events", "fields", "pricing"
+  value               String   // JSON stringified config
+  updatedBy           String?  // User who last updated
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
