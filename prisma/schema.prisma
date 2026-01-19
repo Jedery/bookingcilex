@@ -21,6 +21,22 @@ model User {
   isActive  Boolean  @default(true)
   inviteToken String? @unique
   invitedBy String?
+  
+  // Wallet & Financial Info
+  walletBalance Float   @default(0)    // Saldo corrente
+  rentAmount    Float?                 // Affitto settimanale/mensile
+  rentType      String?                // "weekly" | "monthly" | null
+  bankAccount   String?                // IBAN o info bancarie
+  paymentMethod String?                // "bank_transfer" | "cash" | "revolut"
+  
+  // Housing Info
+  propertyId    String?                // Casa/appartamento assegnato
+  property      Property? @relation(fields: [propertyId], references: [id])
+  moveInDate    DateTime?              // Data inizio affitto
+  moveOutDate   DateTime?              // Data fine affitto (se definita)
+  
+  transactions  Transaction[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -96,4 +112,54 @@ model BookingConfig {
   updatedBy           String?  // User who last updated
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+}
+
+model Transaction {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type            String   // "commission" | "expense" | "payout" | "adjustment"
+  category        String?  // "rent" | "scooter" | "fine" | "damage" | "booking" | "bonus" | "other"
+  
+  amount          Float    // Positivo per entrate, negativo per uscite
+  balanceAfter    Float    // Saldo dopo questa transazione
+  
+  description     String   // Es: "Commissione Booking #BK001", "Affitto Settimana 3"
+  reference       String?  // ID del booking o altro riferimento
+  
+  status          String   @default("completed") // "completed" | "pending" | "cancelled"
+  
+  createdBy       String?  // Chi ha creato la transazione (admin/system)
+  createdByName   String?
+  
+  notes           String?  // Note extra
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model Property {
+  id          String   @id @default(uuid())
+  name        String   // Es: "Casa Playa d'en Bossa", "Appartamento San Antonio"
+  address     String?  // Indirizzo completo
+  
+  // Dettagli proprietà
+  monthlyRent Float    @default(0)    // Affitto mensile totale
+  capacity    Int      @default(1)    // Numero massimo inquilini
+  
+  // Gestione
+  managedBy   String?  // ID del Founder che gestisce
+  notes       String?  // Note varie sulla proprietà
+  
+  // Relazioni
+  tenants     User[]   // Inquilini assegnati
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

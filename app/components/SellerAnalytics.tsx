@@ -86,10 +86,12 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
         gap: '15px',
       }}>
         <h3 style={{ 
-          fontSize: '22px', 
-          fontWeight: '300', 
+          fontSize: '28px', 
+          fontWeight: '700', 
           color: '#fff', 
-          letterSpacing: '2px',
+          letterSpacing: '-0.5px',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
         }}>
           {t('sellerAnalytics.title')}
         </h3>

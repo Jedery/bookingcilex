@@ -1,14 +1,17 @@
 'use client';
 
 import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight, Menu, X, Settings, Wallet, Home } from 'lucide-react';
 
 export default function Sidebar({ t }: { t: (key: string) => string }) {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [bookingsOpen, setBookingsOpen] = useState(false);
+  const [walletOpen, setWalletOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -16,26 +19,15 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
     router.push('/auth/login');
   };
 
+  const isActivePath = (path: string) => {
+    if (path === '/' && pathname === '/') return true;
+    if (path !== '/' && pathname?.startsWith(path)) return true;
+    return false;
+  };
+
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button 
-        className="mobile-menu-button"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        aria-label="Toggle menu"
-      >
-        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {/* Overlay */}
-      {mobileMenuOpen && (
-        <div 
-          className="sidebar-overlay"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      <div className={`sidebar ${mobileMenuOpen ? 'sidebar-mobile-open' : ''}`}>
+      <div className="sidebar">
       <div className="sidebar-brand">
         <a href="/" style={{ textDecoration: 'none', color: 'inherit', textAlign: 'center' }}>
           <div className="sidebar-brand-logo">CILEX</div>
@@ -131,24 +123,95 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
             </li>
           </>
         )}
+        
+        {/* Wallet Menu */}
         <li className="sidebar-item">
-          <a href="/my-profile" className="sidebar-link">
+          <div 
+            className="sidebar-link" 
+            style={{ cursor: 'pointer' }}
+            onClick={() => setWalletOpen(!walletOpen)}
+          >
+            <span className="sidebar-icon">
+              <Wallet size={20} strokeWidth={1.5} />
+            </span>
+            <span className="sidebar-text">Wallet</span>
+            <span style={{ marginLeft: 'auto', transition: 'transform 0.3s ease', transform: walletOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+              <ChevronRight size={16} />
+            </span>
+          </div>
+        </li>
+        {walletOpen && (
+          <>
+            <li className="sidebar-item sidebar-subitem">
+              <a href="/wallet" className="sidebar-link">
+                <span className="sidebar-icon">
+                  <User size={18} strokeWidth={1.5} />
+                </span>
+                <span className="sidebar-text">Il Mio Wallet</span>
+              </a>
+            </li>
+            {(user?.role === 'SuperAdmin' || user?.role === 'Founder' || user?.role === 'Manager') && (
+              <>
+                <li className="sidebar-item sidebar-subitem">
+                  <a href="/wallet/overview" className="sidebar-link">
+                    <span className="sidebar-icon">
+                      <Users size={18} strokeWidth={1.5} />
+                    </span>
+                    <span className="sidebar-text">Wallet Team</span>
+                  </a>
+                </li>
+                <li className="sidebar-item sidebar-subitem">
+                  <a href="/housing" className="sidebar-link">
+                    <span className="sidebar-icon">
+                      <Home size={18} strokeWidth={1.5} />
+                    </span>
+                    <span className="sidebar-text">Gestione Affitti</span>
+                  </a>
+                </li>
+              </>
+            )}
+          </>
+        )}
+        
+        {/* Profile Menu */}
+        <li className="sidebar-item">
+          <div 
+            className="sidebar-link" 
+            style={{ cursor: 'pointer' }}
+            onClick={() => setProfileOpen(!profileOpen)}
+          >
             <span className="sidebar-icon">
               <User size={20} strokeWidth={1.5} />
             </span>
-            <span className="sidebar-text">{t('sidebar.myProfile')}</span>
-          </a>
+            <span className="sidebar-text">Profilo</span>
+            <span style={{ marginLeft: 'auto', transition: 'transform 0.3s ease', transform: profileOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+              <ChevronRight size={16} />
+            </span>
+          </div>
         </li>
-        {user?.role === 'SuperAdmin' && (
-          <li className="sidebar-item">
-            <a href="/profile" className="sidebar-link">
-              <span className="sidebar-icon">
-                <Users size={20} strokeWidth={1.5} />
-              </span>
-              <span className="sidebar-text">{t('sidebar.manageProfiles')}</span>
-            </a>
-          </li>
+        {profileOpen && (
+          <>
+            <li className="sidebar-item sidebar-subitem">
+              <a href="/my-profile" className="sidebar-link">
+                <span className="sidebar-icon">
+                  <User size={18} strokeWidth={1.5} />
+                </span>
+                <span className="sidebar-text">Il Mio Profilo</span>
+              </a>
+            </li>
+            {user?.role === 'SuperAdmin' && (
+              <li className="sidebar-item sidebar-subitem">
+                <a href="/profile" className="sidebar-link">
+                  <span className="sidebar-icon">
+                    <Users size={18} strokeWidth={1.5} />
+                  </span>
+                  <span className="sidebar-text">Gestisci Profili</span>
+                </a>
+              </li>
+            )}
+          </>
         )}
+        
         {(user?.role === 'SuperAdmin' || user?.role === 'Founder') && (
           <li className="sidebar-item">
             <a href="/settings/booking-config" className="sidebar-link">
@@ -184,6 +247,50 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
           </a>
         </li>
       </ul>
+      </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="bottom-nav-bar">
+        <a 
+          href="/" 
+          className={`bottom-nav-item ${isActivePath('/') && pathname === '/' ? 'active' : ''}`}
+        >
+          <LayoutDashboard size={22} strokeWidth={1.5} />
+          <span>{t('sidebar.dashboard')}</span>
+        </a>
+        
+        <a 
+          href="/bookings/list" 
+          className={`bottom-nav-item ${isActivePath('/bookings') ? 'active' : ''}`}
+        >
+          <Calendar size={22} strokeWidth={1.5} />
+          <span>{t('sidebar.bookings')}</span>
+        </a>
+        
+        <a 
+          href="/bookings/add" 
+          className="bottom-nav-item bottom-nav-item-center"
+        >
+          <div className="bottom-nav-fab">
+            <Plus size={24} strokeWidth={2} />
+          </div>
+        </a>
+        
+        <a 
+          href="/my-profile" 
+          className={`bottom-nav-item ${isActivePath('/my-profile') ? 'active' : ''}`}
+        >
+          <User size={22} strokeWidth={1.5} />
+          <span>Profile</span>
+        </a>
+        
+        <a 
+          href="/settings/booking-config" 
+          className={`bottom-nav-item ${isActivePath('/settings') ? 'active' : ''}`}
+        >
+          <Settings size={22} strokeWidth={1.5} />
+          <span>Settings</span>
+        </a>
       </div>
     </>
   );

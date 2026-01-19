@@ -58,7 +58,14 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
       marginBottom: '30px',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-        <h3 style={{ fontSize: '20px', fontWeight: '300', color: '#fff', letterSpacing: '2px' }}>
+        <h3 style={{ 
+          fontSize: '28px', 
+          fontWeight: '700', 
+          color: '#fff', 
+          letterSpacing: '-0.5px',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+        }}>
           Transazioni Recenti
         </h3>
         <button style={{

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useTranslation } from '../i18n/useTranslation';
 import { useAuth } from '../context/AuthContext';
 
@@ -139,7 +138,6 @@ export default function Profile() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
           <h1>User Management</h1>
           <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-            <LanguageSwitcher language={language} setLanguage={setLanguage} />
             {currentUser?.role === 'Founder' && (
               <button 
                 onClick={generateInviteLink}

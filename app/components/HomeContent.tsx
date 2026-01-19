@@ -10,7 +10,7 @@ import SellerAnalytics from './SellerAnalytics';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/useTranslation';
 import { useAuth } from '../context/AuthContext';
-import { Search } from 'lucide-react';
+import { Search, BarChart3, CheckCircle2, Clock, XCircle } from 'lucide-react';
 
 export default function HomeContent() {
   const { t, language, setLanguage } = useTranslation();
@@ -158,33 +158,37 @@ export default function HomeContent() {
       label: t('kpi.totalBookings'),
       value: dashboardData.totalBookings,
       change: 12,
-      icon: '📊',
+      icon: <BarChart3 size={28} strokeWidth={1.5} />,
       color: '#c89664',
       bgColor: 'rgba(200, 150, 100, 0.1)',
+      link: '/bookings/list?status=all',
     },
     {
       label: t('kpi.confirmed'),
       value: dashboardData.confirmedBookings,
       change: 18,
-      icon: '✅',
+      icon: <CheckCircle2 size={28} strokeWidth={1.5} />,
       color: '#48c774',
       bgColor: 'rgba(72, 199, 116, 0.1)',
+      link: '/bookings/list?status=confirmed',
     },
     {
       label: t('kpi.pending'),
       value: dashboardData.pendingBookings,
       change: -5,
-      icon: '⏳',
+      icon: <Clock size={28} strokeWidth={1.5} />,
       color: '#ffc107',
       bgColor: 'rgba(255, 193, 7, 0.1)',
+      link: '/bookings/list?status=pending',
     },
     {
       label: t('kpi.cancelled'),
       value: dashboardData.cancelledBookings,
       change: -12,
-      icon: '❌',
+      icon: <XCircle size={28} strokeWidth={1.5} />,
       color: '#d4495f',
       bgColor: 'rgba(212, 73, 95, 0.1)',
+      link: '/bookings/list?status=cancelled',
     },
   ];
 
@@ -348,10 +352,15 @@ export default function HomeContent() {
         <h2 style={{ 
           marginBottom: '30px', 
           marginTop: '10px',
-          fontSize: '28px', 
-          fontWeight: '200', 
-          letterSpacing: '2px',
-          color: '#fff',
+          fontSize: '36px', 
+          fontWeight: '700', 
+          letterSpacing: '0.5px',
+          background: 'linear-gradient(135deg, #fff 0%, #c89664 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          textShadow: 'none',
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         }}
         className="dashboard-title"
         >
@@ -366,12 +375,15 @@ export default function HomeContent() {
           justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '20px',
+          marginTop: '40px',
         }}>
           <h3 style={{ 
-            fontSize: '20px', 
-            fontWeight: '300', 
-            letterSpacing: '2px',
+            fontSize: '28px', 
+            fontWeight: '700', 
+            letterSpacing: '-0.5px',
             color: '#fff',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
           }}>
             {t('dashboard.teamAnalysis')}
           </h3>

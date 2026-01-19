@@ -6,16 +6,73 @@ import Sidebar from '../../components/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useTranslation } from '../../i18n/useTranslation';
 
-// Configurazione eventi iniziale
-const DEFAULT_EVENTS = [
-  { id: 1, name: 'Open Bar', basePrice: 50, category: 'Nightlife', active: true },
-  { id: 2, name: 'Boat Party', basePrice: 80, category: 'Events', active: true },
-  { id: 3, name: 'Escursione a Formentera', basePrice: 120, category: 'Excursions', active: true },
-  { id: 4, name: 'Cena Spettacolo', basePrice: 90, category: 'Dining', active: true },
-  { id: 5, name: 'Beach Club Day', basePrice: 60, category: 'Beach', active: true },
-  { id: 6, name: 'VIP Table Service', basePrice: 200, category: 'VIP', active: true },
-  { id: 7, name: 'Sunset Catamaran', basePrice: 150, category: 'Excursions', active: true },
-  { id: 8, name: 'Club Entry + Drinks', basePrice: 40, category: 'Nightlife', active: true },
+// Configurazione eventi organizzati per gruppi (come in add booking)
+const DEFAULT_EVENTS_GROUPS = [
+  {
+    id: 1,
+    group: '🍹 OPEN BAR',
+    color: '#ff6b9d',
+    bgColor: 'rgba(255, 107, 157, 0.15)',
+    events: [
+      { id: 1, name: 'Tantra', basePrice: 50, description: 'Open bar completo presso Tantra Club. Include bevande standard e accesso prioritario.', availableTimes: ['22:00', '23:00', '00:00', '01:00'], active: true },
+      { id: 2, name: 'Moma', basePrice: 60, description: 'Open bar premium presso Moma. Include cocktails selezionati e accesso VIP.', availableTimes: ['23:00', '00:00', '01:00', '02:00'], active: true },
+      { id: 3, name: "Angelo's", basePrice: 55, description: "Open bar presso Angelo's. Include bevande e snacks leggeri.", availableTimes: ['22:00', '23:00', '00:00'], active: true },
+      { id: 4, name: 'Ushuaia', basePrice: 70, description: 'Open bar esclusivo presso Ushuaia Beach Club. Include premium drinks e accesso beach area.', availableTimes: ['17:00', '18:00', '19:00', '20:00'], active: true },
+    ],
+  },
+  {
+    id: 2,
+    group: '⛵ BOAT PARTY',
+    color: '#4ecdc4',
+    bgColor: 'rgba(78, 205, 196, 0.15)',
+    events: [
+      { id: 5, name: 'Standard (3 ore)', basePrice: 100, description: 'Boat party di 3 ore. Include bevande, musica e DJ set. Partenza dal porto.', availableTimes: ['10:00', '14:00', '18:00'], active: true },
+      { id: 6, name: 'Premium (5 ore + Pranzo)', basePrice: 130, description: 'Boat party premium di 5 ore con pranzo incluso. Open bar completo, DJ set e catering gourmet.', availableTimes: ['11:00', '12:00'], active: true },
+      { id: 7, name: 'Sunset (4 ore)', basePrice: 115, description: 'Boat party al tramonto di 4 ore. Aperitivo, musica live e vista spettacolare sul tramonto.', availableTimes: ['17:00', '18:00', '19:00'], active: true },
+    ],
+  },
+  {
+    id: 3,
+    group: '🏝️ ESCURSIONI',
+    color: '#95e1d3',
+    bgColor: 'rgba(149, 225, 211, 0.15)',
+    events: [
+      { id: 8, name: 'Formentera Standard', basePrice: 120, description: 'Escursione giornaliera a Formentera. Include trasporto, pranzo e tempo libero in spiaggia.', availableTimes: ['09:00', '10:00'], active: true },
+      { id: 9, name: 'Formentera VIP', basePrice: 180, description: 'Escursione VIP a Formentera. Trasporto privato, pranzo gourmet, beach club access e servizio dedicato.', availableTimes: ['09:00', '10:00', '11:00'], active: true },
+      { id: 10, name: 'Sunset Catamaran', basePrice: 150, description: 'Escursione in catamarano al tramonto. Include aperitivo, snorkeling e vista panoramica.', availableTimes: ['17:00', '18:00', '19:00'], active: true },
+    ],
+  },
+  {
+    id: 4,
+    group: '🏖️ BEACH CLUB',
+    color: '#f7b731',
+    bgColor: 'rgba(247, 183, 49, 0.15)',
+    events: [
+      { id: 11, name: 'Nassau Beach Club', basePrice: 60, description: 'Giornata al Nassau Beach Club. Include lettino, ombrellone e credito consumazione.', availableTimes: ['10:00', '11:00', '12:00', '13:00'], active: true },
+      { id: 12, name: 'Nikki Beach', basePrice: 80, description: 'Accesso Nikki Beach con lettino riservato. Include welcome drink e credito bar.', availableTimes: ['11:00', '12:00', '13:00', '14:00'], active: true },
+      { id: 13, name: 'Blue Marlin', basePrice: 90, description: 'Blue Marlin Ibiza experience. Lettino VIP, servizio al tavolo e credito consumazione.', availableTimes: ['10:00', '11:00', '12:00'], active: true },
+    ],
+  },
+  {
+    id: 5,
+    group: '🍽️ CENA & SPETTACOLO',
+    color: '#c89664',
+    bgColor: 'rgba(200, 150, 100, 0.15)',
+    events: [
+      { id: 14, name: 'Cena Spettacolo Standard', basePrice: 90, description: 'Cena con spettacolo live. Menu 3 portate, bevande e intrattenimento serale.', availableTimes: ['20:00', '21:00', '22:00'], active: true },
+      { id: 15, name: 'Cena VIP + Show', basePrice: 150, description: 'Esperienza VIP con cena gourmet 5 portate, vini selezionati e spettacolo esclusivo.', availableTimes: ['19:00', '20:00', '21:00'], active: true },
+    ],
+  },
+  {
+    id: 6,
+    group: '⭐ VIP SERVICES',
+    color: '#a29bfe',
+    bgColor: 'rgba(162, 155, 254, 0.15)',
+    events: [
+      { id: 16, name: 'VIP Table Service', basePrice: 200, description: 'Servizio tavolo VIP in discoteca. Include tavolo riservato, bottiglie premium e host dedicato.', availableTimes: ['22:00', '23:00', '00:00', '01:00'], active: true },
+      { id: 17, name: 'Club Entry + Drinks', basePrice: 40, description: 'Ingresso club con drink inclusi. Skip the line e accesso prioritario.', availableTimes: ['23:00', '00:00', '01:00'], active: true },
+    ],
+  },
 ];
 
 // Configurazione campi obbligatori
@@ -41,19 +98,31 @@ export default function BookingConfigPage() {
   const [hasAccess, setHasAccess] = useState(true);
   
   // Stati per la configurazione
-  const [events, setEvents] = useState(DEFAULT_EVENTS);
+  const [eventsGroups, setEventsGroups] = useState(DEFAULT_EVENTS_GROUPS);
   const [fieldConfig, setFieldConfig] = useState(DEFAULT_FIELD_CONFIG);
+  const [selectedGroup, setSelectedGroup] = useState<any>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [isEditingGroup, setIsEditingGroup] = useState(false);
   const [isEditingEvent, setIsEditingEvent] = useState(false);
   const [activeTab, setActiveTab] = useState<'events' | 'fields' | 'pricing'>('events');
   
-  // Form per nuovo/modifica evento
+  // Form per gruppo
+  const [groupForm, setGroupForm] = useState({
+    id: 0,
+    group: '',
+    color: '#ff6b9d',
+    bgColor: 'rgba(255, 107, 157, 0.15)',
+  });
+
+  // Form per evento
   const [eventForm, setEventForm] = useState({
     id: 0,
     name: '',
     basePrice: 0,
-    category: 'Events',
+    description: '',
+    availableTimes: [] as string[],
     active: true,
+    groupId: 0,
   });
 
   // Configurazione prezzi dinamici
@@ -77,18 +146,18 @@ export default function BookingConfigPage() {
 
   const loadConfiguration = () => {
     // Carica da localStorage
-    const savedEvents = localStorage.getItem('bookingEvents');
+    const savedGroups = localStorage.getItem('bookingEventsGroups');
     const savedFields = localStorage.getItem('bookingFields');
     const savedPricing = localStorage.getItem('bookingPricing');
     
-    if (savedEvents) setEvents(JSON.parse(savedEvents));
+    if (savedGroups) setEventsGroups(JSON.parse(savedGroups));
     if (savedFields) setFieldConfig(JSON.parse(savedFields));
     if (savedPricing) setPricingConfig(JSON.parse(savedPricing));
   };
 
   const saveConfiguration = () => {
     // Salva in localStorage (poi integrerai con API)
-    localStorage.setItem('bookingEvents', JSON.stringify(events));
+    localStorage.setItem('bookingEventsGroups', JSON.stringify(eventsGroups));
     localStorage.setItem('bookingFields', JSON.stringify(fieldConfig));
     localStorage.setItem('bookingPricing', JSON.stringify(pricingConfig));
     
@@ -97,7 +166,7 @@ export default function BookingConfigPage() {
 
   const resetConfiguration = () => {
     if (confirm('⚠️ Sei sicuro di voler ripristinare la configurazione di default?')) {
-      setEvents(DEFAULT_EVENTS);
+      setEventsGroups(DEFAULT_EVENTS_GROUPS);
       setFieldConfig(DEFAULT_FIELD_CONFIG);
       setPricingConfig({
         weekendMultiplier: 1.2,
@@ -110,38 +179,145 @@ export default function BookingConfigPage() {
     }
   };
 
-  // Gestione Eventi
-  const handleAddEvent = () => {
-    const newEvent = {
-      ...eventForm,
-      id: Math.max(...events.map(e => e.id)) + 1,
+  // === GESTIONE GRUPPI/CATEGORIE ===
+  const handleAddGroup = () => {
+    const newGroup = {
+      ...groupForm,
+      id: Math.max(...eventsGroups.map(g => g.id), 0) + 1,
+      events: [],
     };
-    setEvents([...events, newEvent]);
-    setEventForm({ id: 0, name: '', basePrice: 0, category: 'Events', active: true });
+    setEventsGroups([...eventsGroups, newGroup]);
+    setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
+    setIsEditingGroup(false);
+  };
+
+  const handleEditGroup = (group: any) => {
+    setGroupForm({
+      id: group.id,
+      group: group.group,
+      color: group.color,
+      bgColor: group.bgColor,
+    });
+    setSelectedGroup(group);
+    setIsEditingGroup(true);
+  };
+
+  const handleUpdateGroup = () => {
+    setEventsGroups(eventsGroups.map(g => 
+      g.id === groupForm.id 
+        ? { ...g, group: groupForm.group, color: groupForm.color, bgColor: groupForm.bgColor }
+        : g
+    ));
+    setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
+    setIsEditingGroup(false);
+    setSelectedGroup(null);
+  };
+
+  const handleDeleteGroup = (id: number) => {
+    if (confirm('⚠️ Eliminare questo gruppo rimuoverà anche tutti gli eventi al suo interno. Continuare?')) {
+      setEventsGroups(eventsGroups.filter(g => g.id !== id));
+    }
+  };
+
+  // === GESTIONE EVENTI ===
+  const handleAddEvent = () => {
+    if (!eventForm.groupId) {
+      alert('⚠️ Seleziona un gruppo per questo evento');
+      return;
+    }
+    
+    const newEvent = {
+      id: Math.max(...eventsGroups.flatMap(g => g.events.map(e => e.id)), 0) + 1,
+      name: eventForm.name,
+      basePrice: eventForm.basePrice,
+      description: eventForm.description,
+      availableTimes: eventForm.availableTimes,
+      active: eventForm.active,
+    };
+    
+    setEventsGroups(eventsGroups.map(g => 
+      g.id === eventForm.groupId 
+        ? { ...g, events: [...g.events, newEvent] }
+        : g
+    ));
+    
+    setEventForm({ id: 0, name: '', basePrice: 0, description: '', availableTimes: [], active: true, groupId: 0 });
     setIsEditingEvent(false);
   };
 
-  const handleEditEvent = (event: any) => {
-    setEventForm(event);
+  const handleEditEvent = (groupId: number, event: any) => {
+    setEventForm({
+      ...event,
+      groupId: groupId,
+    });
     setSelectedEvent(event);
     setIsEditingEvent(true);
   };
 
   const handleUpdateEvent = () => {
-    setEvents(events.map(e => e.id === eventForm.id ? eventForm : e));
-    setEventForm({ id: 0, name: '', basePrice: 0, category: 'Events', active: true });
+    setEventsGroups(eventsGroups.map(g => {
+      if (g.id === eventForm.groupId) {
+        return {
+          ...g,
+          events: g.events.map(e => 
+            e.id === eventForm.id 
+              ? {
+                  id: eventForm.id,
+                  name: eventForm.name,
+                  basePrice: eventForm.basePrice,
+                  description: eventForm.description,
+                  availableTimes: eventForm.availableTimes,
+                  active: eventForm.active,
+                }
+              : e
+          ),
+        };
+      }
+      return g;
+    }));
+    
+    setEventForm({ id: 0, name: '', basePrice: 0, description: '', availableTimes: [], active: true, groupId: 0 });
     setIsEditingEvent(false);
     setSelectedEvent(null);
   };
 
-  const handleDeleteEvent = (id: number) => {
+  const handleDeleteEvent = (groupId: number, eventId: number) => {
     if (confirm('Sei sicuro di voler eliminare questo evento?')) {
-      setEvents(events.filter(e => e.id !== id));
+      setEventsGroups(eventsGroups.map(g => {
+        if (g.id === groupId) {
+          return { ...g, events: g.events.filter(e => e.id !== eventId) };
+        }
+        return g;
+      }));
     }
   };
 
-  const toggleEventActive = (id: number) => {
-    setEvents(events.map(e => e.id === id ? { ...e, active: !e.active } : e));
+  const toggleEventActive = (groupId: number, eventId: number) => {
+    setEventsGroups(eventsGroups.map(g => {
+      if (g.id === groupId) {
+        return {
+          ...g,
+          events: g.events.map(e => e.id === eventId ? { ...e, active: !e.active } : e),
+        };
+      }
+      return g;
+    }));
+  };
+
+  const handleAddTimeToEvent = (time: string) => {
+    if (!eventForm.availableTimes.includes(time)) {
+      setEventForm({
+        ...eventForm,
+        availableTimes: [...eventForm.availableTimes, time].sort(),
+      });
+    }
+  };
+
+  const handleRemoveTimeFromEvent = (time: string) => {
+    setEventForm({
+      ...eventForm,
+      availableTimes: eventForm.availableTimes.filter(t => t !== time),
+    });
   };
 
   // Gestione Campi
@@ -287,94 +463,295 @@ export default function BookingConfigPage() {
           >
             💰 Prezzi Dinamici
           </button>
+          <button
+            onClick={() => setActiveTab('times')}
+            style={{
+              padding: '14px 28px',
+              background: activeTab === 'times' ? 'linear-gradient(135deg, #a29bfe, #6c5ce7)' : 'transparent',
+              border: 'none',
+              borderBottom: activeTab === 'times' ? '3px solid #a29bfe' : '3px solid transparent',
+              color: activeTab === 'times' ? '#fff' : '#888',
+              fontWeight: '700',
+              fontSize: '15px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            ⏰ Orari Eventi
+          </button>
         </div>
 
         {/* Tab Content */}
         {activeTab === 'events' && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-              
-              {/* Lista Eventi */}
+            {/* Sezione Gruppi/Categorie */}
+            <div style={{ marginBottom: '30px' }}>
               <div className="card" style={{ 
                 background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
                 border: '2px solid rgba(200, 150, 100, 0.2)',
                 borderRadius: '16px',
                 padding: '24px',
-                maxHeight: '600px',
-                overflowY: 'auto',
               }}>
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: '#c89664' }}>
-                  📋 Lista Eventi
-                </h3>
-                
-                {events.map((event) => (
-                  <div key={event.id} style={{
-                    background: event.active ? 'rgba(78, 205, 196, 0.05)' : 'rgba(239, 68, 68, 0.05)',
-                    border: `1.5px solid ${event.active ? 'rgba(78, 205, 196, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#c89664' }}>
+                    🎭 Gestione Categorie
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsEditingGroup(true);
+                      setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
+                    }}
+                    style={{
+                      padding: '10px 20px',
+                      background: 'linear-gradient(135deg, #c89664, #b87d4b)',
+                      border: 'none',
+                      borderRadius: '10px',
+                      color: '#fff',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ➕ Nuova Categoria
+                  </button>
+                </div>
+
+                {/* Form Categoria (se in editing) */}
+                {isEditingGroup && (
+                  <div style={{
+                    padding: '20px',
+                    background: 'rgba(200, 150, 100, 0.1)',
+                    border: '1px solid rgba(200, 150, 100, 0.3)',
                     borderRadius: '12px',
-                    padding: '16px',
-                    marginBottom: '12px',
+                    marginBottom: '20px',
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                      <div style={{ flex: 1 }}>
-                        <h4 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px', color: '#fff' }}>
-                          {event.name}
-                        </h4>
-                        <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: '#888' }}>
-                          <span>💰 €{event.basePrice}</span>
-                          <span>📁 {event.category}</span>
-                          <span>{event.active ? '✅ Attivo' : '❌ Disattivo'}</span>
-                        </div>
-                      </div>
-                      
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                      <input
+                        type="text"
+                        value={groupForm.group}
+                        onChange={(e) => setGroupForm({ ...groupForm, group: e.target.value })}
+                        placeholder="es. 🍹 OPEN BAR"
+                        style={{
+                          padding: '14px',
+                          background: '#1a1a1e',
+                          border: '1.5px solid #2a3a52',
+                          borderRadius: '10px',
+                          color: '#fff',
+                          fontSize: '15px',
+                        }}
+                      />
+                      <input
+                        type="color"
+                        value={groupForm.color}
+                        onChange={(e) => setGroupForm({ ...groupForm, color: e.target.value })}
+                        style={{
+                          padding: '8px',
+                          background: '#1a1a1e',
+                          border: '1.5px solid #2a3a52',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                        }}
+                      />
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button
-                          onClick={() => toggleEventActive(event.id)}
+                          onClick={groupForm.id ? handleUpdateGroup : handleAddGroup}
+                          disabled={!groupForm.group}
                           style={{
-                            padding: '8px 12px',
-                            background: event.active ? 'rgba(239, 68, 68, 0.2)' : 'rgba(78, 205, 196, 0.2)',
+                            flex: 1,
+                            padding: '14px',
+                            background: !groupForm.group ? 'rgba(100, 100, 100, 0.3)' : 'linear-gradient(135deg, #10b981, #059669)',
                             border: 'none',
-                            borderRadius: '8px',
-                            color: event.active ? '#ef4444' : '#4ecdc4',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
+                            borderRadius: '10px',
+                            color: '#fff',
+                            fontWeight: '700',
+                            cursor: !groupForm.group ? 'not-allowed' : 'pointer',
                           }}
                         >
-                          {event.active ? 'Disattiva' : 'Attiva'}
+                          ✅
                         </button>
                         <button
-                          onClick={() => handleEditEvent(event)}
-                          style={{
-                            padding: '8px 12px',
-                            background: 'rgba(78, 205, 196, 0.2)',
-                            border: 'none',
-                            borderRadius: '8px',
-                            color: '#4ecdc4',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
+                          onClick={() => {
+                            setIsEditingGroup(false);
+                            setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
                           }}
-                        >
-                          ✏️ Modifica
-                        </button>
-                        <button
-                          onClick={() => handleDeleteEvent(event.id)}
                           style={{
-                            padding: '8px 12px',
+                            padding: '14px',
                             background: 'rgba(239, 68, 68, 0.2)',
                             border: 'none',
-                            borderRadius: '8px',
+                            borderRadius: '10px',
                             color: '#ef4444',
-                            fontSize: '12px',
-                            fontWeight: '600',
+                            fontWeight: '700',
                             cursor: 'pointer',
                           }}
                         >
-                          🗑️
+                          ❌
                         </button>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Lista Gruppi */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                  {eventsGroups.map((group) => (
+                    <div
+                      key={group.id}
+                      style={{
+                        padding: '16px',
+                        background: group.bgColor,
+                        border: `2px solid ${group.color}`,
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <h4 style={{ fontSize: '16px', fontWeight: '700', color: group.color, margin: 0 }}>
+                          {group.group}
+                        </h4>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button
+                            onClick={() => handleEditGroup(group)}
+                            style={{
+                              padding: '6px 10px',
+                              background: 'rgba(78, 205, 196, 0.2)',
+                              border: 'none',
+                              borderRadius: '6px',
+                              color: '#4ecdc4',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => handleDeleteGroup(group.id)}
+                            style={{
+                              padding: '6px 10px',
+                              background: 'rgba(239, 68, 68, 0.2)',
+                              border: 'none',
+                              borderRadius: '6px',
+                              color: '#ef4444',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#888' }}>
+                        {group.events.length} eventi
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Sezione Eventi per Gruppo */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+              {/* Lista Eventi Organizzati per Gruppo */}
+              <div className="card" style={{ 
+                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
+                border: '2px solid rgba(78, 205, 196, 0.2)',
+                borderRadius: '16px',
+                padding: '24px',
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }}>
+                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: '#4ecdc4' }}>
+                  📋 Eventi per Categoria
+                </h3>
+                
+                {eventsGroups.map((group) => (
+                  <div key={group.id} style={{ marginBottom: '24px' }}>
+                    <h4 style={{
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      color: group.color,
+                      marginBottom: '12px',
+                      padding: '10px 16px',
+                      background: group.bgColor,
+                      borderRadius: '8px',
+                      borderLeft: `4px solid ${group.color}`,
+                    }}>
+                      {group.group} ({group.events.length})
+                    </h4>
+                    
+                    {group.events.length === 0 ? (
+                      <p style={{ fontSize: '13px', color: '#666', fontStyle: 'italic', marginLeft: '16px' }}>
+                        Nessun evento in questa categoria
+                      </p>
+                    ) : (
+                      group.events.map((event) => (
+                        <div
+                          key={event.id}
+                          style={{
+                            background: event.active ? 'rgba(78, 205, 196, 0.05)' : 'rgba(239, 68, 68, 0.05)',
+                            border: `1.5px solid ${event.active ? 'rgba(78, 205, 196, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                            borderRadius: '10px',
+                            padding: '12px',
+                            marginBottom: '8px',
+                            marginLeft: '16px',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ flex: 1 }}>
+                              <h5 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '4px', color: '#fff' }}>
+                                {event.name}
+                              </h5>
+                              <div style={{ fontSize: '12px', color: '#888' }}>
+                                💰 €{event.basePrice} • {event.active ? '✅ Attivo' : '❌ Disattivo'}
+                              </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button
+                                onClick={() => toggleEventActive(group.id, event.id)}
+                                style={{
+                                  padding: '6px 10px',
+                                  background: event.active ? 'rgba(239, 68, 68, 0.2)' : 'rgba(78, 205, 196, 0.2)',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  color: event.active ? '#ef4444' : '#4ecdc4',
+                                  fontSize: '11px',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {event.active ? 'OFF' : 'ON'}
+                              </button>
+                              <button
+                                onClick={() => handleEditEvent(group.id, event)}
+                                style={{
+                                  padding: '6px 10px',
+                                  background: 'rgba(78, 205, 196, 0.2)',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  color: '#4ecdc4',
+                                  fontSize: '11px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => handleDeleteEvent(group.id, event.id)}
+                                style={{
+                                  padding: '6px 10px',
+                                  background: 'rgba(239, 68, 68, 0.2)',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  color: '#ef4444',
+                                  fontSize: '11px',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 ))}
               </div>
@@ -390,7 +767,33 @@ export default function BookingConfigPage() {
                   {isEditingEvent ? '✏️ Modifica Evento' : '➕ Nuovo Evento'}
                 </h3>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
+                      Categoria *
+                    </label>
+                    <select
+                      value={eventForm.groupId}
+                      onChange={(e) => setEventForm({ ...eventForm, groupId: parseInt(e.target.value) })}
+                      style={{
+                        width: '100%',
+                        padding: '14px',
+                        background: '#1a1a1e',
+                        border: '1.5px solid #2a3a52',
+                        borderRadius: '10px',
+                        color: '#fff',
+                        fontSize: '15px',
+                      }}
+                    >
+                      <option value={0}>-- Seleziona Categoria --</option>
+                      {eventsGroups.map((group) => (
+                        <option key={group.id} value={group.id}>
+                          {group.group}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
                       Nome Evento *
@@ -399,7 +802,7 @@ export default function BookingConfigPage() {
                       type="text"
                       value={eventForm.name}
                       onChange={(e) => setEventForm({ ...eventForm, name: e.target.value })}
-                      placeholder="es. Open Bar Deluxe"
+                      placeholder="es. Tantra"
                       style={{
                         width: '100%',
                         padding: '14px',
@@ -419,7 +822,7 @@ export default function BookingConfigPage() {
                     <input
                       type="number"
                       value={eventForm.basePrice}
-                      onChange={(e) => setEventForm({ ...eventForm, basePrice: parseFloat(e.target.value) })}
+                      onChange={(e) => setEventForm({ ...eventForm, basePrice: parseFloat(e.target.value) || 0 })}
                       placeholder="50"
                       style={{
                         width: '100%',
@@ -435,11 +838,13 @@ export default function BookingConfigPage() {
 
                   <div>
                     <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Categoria *
+                      Descrizione
                     </label>
-                    <select
-                      value={eventForm.category}
-                      onChange={(e) => setEventForm({ ...eventForm, category: e.target.value })}
+                    <textarea
+                      value={eventForm.description}
+                      onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                      placeholder="Descrizione evento..."
+                      rows={3}
                       style={{
                         width: '100%',
                         padding: '14px',
@@ -447,16 +852,69 @@ export default function BookingConfigPage() {
                         border: '1.5px solid #2a3a52',
                         borderRadius: '10px',
                         color: '#fff',
-                        fontSize: '15px',
+                        fontSize: '14px',
+                        resize: 'vertical',
                       }}
-                    >
-                      <option value="Nightlife">Nightlife</option>
-                      <option value="Events">Events</option>
-                      <option value="Excursions">Excursions</option>
-                      <option value="Dining">Dining</option>
-                      <option value="Beach">Beach</option>
-                      <option value="VIP">VIP</option>
-                    </select>
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
+                      Orari Disponibili
+                    </label>
+                    <div style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '8px',
+                      padding: '12px',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      borderRadius: '8px',
+                      marginBottom: '8px',
+                    }}>
+                      {eventForm.availableTimes.map((time) => (
+                        <span
+                          key={time}
+                          style={{
+                            padding: '6px 12px',
+                            background: 'rgba(78, 205, 196, 0.2)',
+                            border: '1px solid rgba(78, 205, 196, 0.4)',
+                            borderRadius: '6px',
+                            color: '#4ecdc4',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => handleRemoveTimeFromEvent(time)}
+                        >
+                          {time} ✕
+                        </span>
+                      ))}
+                      {eventForm.availableTimes.length === 0 && (
+                        <span style={{ fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+                          Nessun orario selezionato
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                      {['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00'].map((time) => (
+                        <button
+                          key={time}
+                          onClick={() => handleAddTimeToEvent(time)}
+                          disabled={eventForm.availableTimes.includes(time)}
+                          style={{
+                            padding: '8px',
+                            background: eventForm.availableTimes.includes(time) ? 'rgba(100, 100, 100, 0.2)' : 'rgba(78, 205, 196, 0.1)',
+                            border: '1px solid rgba(78, 205, 196, 0.3)',
+                            borderRadius: '6px',
+                            color: eventForm.availableTimes.includes(time) ? '#666' : '#4ecdc4',
+                            fontSize: '12px',
+                            cursor: eventForm.availableTimes.includes(time) ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -473,10 +931,10 @@ export default function BookingConfigPage() {
 
                   <button
                     onClick={isEditingEvent ? handleUpdateEvent : handleAddEvent}
-                    disabled={!eventForm.name || !eventForm.basePrice}
+                    disabled={!eventForm.name || !eventForm.basePrice || !eventForm.groupId}
                     style={{
                       padding: '16px',
-                      background: (!eventForm.name || !eventForm.basePrice)
+                      background: (!eventForm.name || !eventForm.basePrice || !eventForm.groupId)
                         ? 'rgba(100, 100, 100, 0.3)'
                         : 'linear-gradient(135deg, #4ecdc4, #44a08d)',
                       border: 'none',
@@ -484,7 +942,7 @@ export default function BookingConfigPage() {
                       color: '#fff',
                       fontWeight: '700',
                       fontSize: '16px',
-                      cursor: (!eventForm.name || !eventForm.basePrice) ? 'not-allowed' : 'pointer',
+                      cursor: (!eventForm.name || !eventForm.basePrice || !eventForm.groupId) ? 'not-allowed' : 'pointer',
                       marginTop: '10px',
                     }}
                   >
@@ -495,7 +953,8 @@ export default function BookingConfigPage() {
                     <button
                       onClick={() => {
                         setIsEditingEvent(false);
-                        setEventForm({ id: 0, name: '', basePrice: 0, category: 'Events', active: true });
+                        setSelectedEvent(null);
+                        setEventForm({ id: 0, name: '', basePrice: 0, description: '', availableTimes: [], active: true, groupId: 0 });
                       }}
                       style={{
                         padding: '12px',
@@ -744,6 +1203,190 @@ export default function BookingConfigPage() {
                   📊 <strong>Esempio:</strong> Un evento da €100 nel weekend alle 22:00 costerà:<br/>
                   €100 × {pricingConfig.weekendMultiplier.toFixed(2)} (weekend) × {pricingConfig.eveningMultiplier.toFixed(2)} (serale) = €{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier).toFixed(2)}<br/>
                   + Tasse ({(pricingConfig.taxRate * 100).toFixed(0)}%) = €{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier * (1 + pricingConfig.taxRate)).toFixed(2)} <strong>Totale</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Orari Eventi */}
+        {activeTab === 'times' && (
+          <div>
+            <div className="card" style={{
+              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
+              border: '2px solid rgba(162, 155, 254, 0.2)',
+              borderRadius: '16px',
+              padding: '24px',
+            }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: '#a29bfe' }}>
+                ⏰ Gestione Orari per Evento
+              </h3>
+              
+              <p style={{ fontSize: '14px', color: '#888', marginBottom: '24px' }}>
+                Configura gli orari disponibili per ogni evento. Questi orari verranno mostrati nella selezione durante la creazione di una prenotazione.
+              </p>
+
+              <div style={{ display: 'grid', gap: '24px' }}>
+                {events.map((event) => (
+                  <div key={event.id} style={{
+                    background: 'rgba(162, 155, 254, 0.05)',
+                    border: '1.5px solid rgba(162, 155, 254, 0.2)',
+                    borderRadius: '12px',
+                    padding: '20px',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
+                      <div>
+                        <h4 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '6px', color: '#fff' }}>
+                          {event.name}
+                        </h4>
+                        <div style={{ display: 'flex', gap: '12px', fontSize: '13px', color: '#888' }}>
+                          <span>💰 €{event.basePrice}</span>
+                          <span>📁 {event.category}</span>
+                        </div>
+                      </div>
+                      <span style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        background: event.active ? 'rgba(78, 205, 196, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: event.active ? '#4ecdc4' : '#ef4444',
+                      }}>
+                        {event.active ? '✅ Attivo' : '❌ Non Attivo'}
+                      </span>
+                    </div>
+
+                    {/* Orari Attuali */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '10px', display: 'block' }}>
+                        Orari Disponibili ({event.availableTimes?.length || 0})
+                      </label>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {event.availableTimes && event.availableTimes.length > 0 ? (
+                          event.availableTimes.map((time) => (
+                            <div key={time} style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 14px',
+                              background: 'rgba(162, 155, 254, 0.15)',
+                              border: '1px solid rgba(162, 155, 254, 0.3)',
+                              borderRadius: '8px',
+                              color: '#a29bfe',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                            }}>
+                              ⏰ {time}
+                              <button
+                                onClick={() => handleRemoveTimeFromEvent(event.id, time)}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#ef4444',
+                                  cursor: 'pointer',
+                                  fontSize: '16px',
+                                  padding: '0',
+                                  marginLeft: '4px',
+                                }}
+                                title="Rimuovi orario"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <span style={{ fontSize: '13px', color: '#666', fontStyle: 'italic' }}>
+                            Nessun orario configurato
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Aggiungi Nuovo Orario */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '10px', display: 'block' }}>
+                        Aggiungi Orario
+                      </label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <input
+                          type="time"
+                          id={`time-input-${event.id}`}
+                          style={{
+                            flex: 1,
+                            padding: '12px',
+                            background: '#1a1a1e',
+                            border: '1.5px solid #2a3a52',
+                            borderRadius: '8px',
+                            color: '#fff',
+                            fontSize: '14px',
+                          }}
+                        />
+                        <button
+                          onClick={() => {
+                            const input = document.getElementById(`time-input-${event.id}`) as HTMLInputElement;
+                            if (input && input.value) {
+                              handleAddTimeToEvent(event.id, input.value);
+                              input.value = '';
+                            }
+                          }}
+                          style={{
+                            padding: '12px 20px',
+                            background: 'linear-gradient(135deg, #a29bfe, #6c5ce7)',
+                            border: 'none',
+                            borderRadius: '8px',
+                            color: '#fff',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          ➕ Aggiungi
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Descrizione Evento */}
+                    <div>
+                      <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '10px', display: 'block' }}>
+                        📋 Descrizione Evento
+                      </label>
+                      <textarea
+                        value={event.description || ''}
+                        onChange={(e) => handleUpdateEventDescription(event.id, e.target.value)}
+                        placeholder="Inserisci una descrizione dettagliata dell'evento..."
+                        rows={3}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          background: '#1a1a1e',
+                          border: '1.5px solid #2a3a52',
+                          borderRadius: '8px',
+                          color: '#fff',
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                          resize: 'vertical',
+                          fontFamily: 'inherit',
+                        }}
+                      />
+                      <p style={{ fontSize: '12px', color: '#666', marginTop: '6px', fontStyle: 'italic' }}>
+                        💡 Questa descrizione verrà mostrata nella pagina di creazione prenotazione dopo la selezione dell'evento.
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Info Box */}
+              <div style={{
+                marginTop: '24px',
+                padding: '16px',
+                background: 'rgba(162, 155, 254, 0.1)',
+                border: '1px solid rgba(162, 155, 254, 0.3)',
+                borderRadius: '10px',
+              }}>
+                <p style={{ fontSize: '13px', color: '#a29bfe', lineHeight: '1.6', margin: 0 }}>
+                  💡 <strong>Suggerimento:</strong> Gli orari che aggiungi qui verranno mostrati automaticamente nel dropdown di selezione orario quando crei una prenotazione per l'evento specifico. Questo rende la compilazione più veloce e riduce gli errori.
                 </p>
               </div>
             </div>
