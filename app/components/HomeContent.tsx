@@ -152,6 +152,7 @@ export default function HomeContent() {
           justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '30px',
+          paddingTop: '0',
         }}>
           {/* Desktop: Search + Language + User */}
           <div style={{ 
