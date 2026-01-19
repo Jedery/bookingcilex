@@ -89,16 +89,6 @@ export default function LanguageSwitcher({
       >
         {FLAGS[language]}
       </button>
-          e.currentTarget.style.boxShadow = '0 6px 16px rgba(200, 150, 100, 0.3)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.3)';
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
-        }}
-      >
-        {FLAGS[language]}
-      </button>
     </div>
   );
 }
