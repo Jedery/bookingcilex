@@ -350,7 +350,7 @@ export default function HomeContent() {
         </div>
 
         <h2 style={{ 
-          marginBottom: '30px', 
+          marginBottom: '24px', 
           marginTop: '10px',
           fontSize: '36px', 
           fontWeight: '700', 
@@ -375,7 +375,7 @@ export default function HomeContent() {
           justifyContent: 'space-between', 
           alignItems: 'center',
           marginBottom: '20px',
-          marginTop: '40px',
+          marginTop: '32px',
         }}>
           <h3 style={{ 
             fontSize: '28px', 

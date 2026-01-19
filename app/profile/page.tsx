@@ -25,9 +25,9 @@ export default function Profile() {
   const [inviteLink, setInviteLink] = useState('');
   const [showInvite, setShowInvite] = useState(false);
   
-  // Protezione accesso solo SuperAdmin
+  // Protezione accesso estesa a SuperAdmin, Founder e Manager
   useEffect(() => {
-    if (currentUser && currentUser.role !== 'SuperAdmin') {
+    if (currentUser && !['SuperAdmin', 'Founder', 'Manager'].includes(currentUser.role)) {
       window.location.href = '/';
     }
   }, [currentUser]);

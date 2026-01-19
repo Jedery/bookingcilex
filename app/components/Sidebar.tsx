@@ -199,7 +199,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                 <span className="sidebar-text">Il Mio Profilo</span>
               </a>
             </li>
-            {user?.role === 'SuperAdmin' && (
+            {(user?.role === 'SuperAdmin' || user?.role === 'Founder' || user?.role === 'Manager') && (
               <li className="sidebar-item sidebar-subitem">
                 <a href="/profile" className="sidebar-link">
                   <span className="sidebar-icon">

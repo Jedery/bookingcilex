@@ -33,14 +33,14 @@ export default function KPICards({ cards }: KPICardsProps) {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 24px;
-          margin-bottom: 30px;
+          margin-bottom: 0;
         }
 
         @media (max-width: 768px) {
           .kpi-cards-container {
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
           }
 
           .kpi-card {
