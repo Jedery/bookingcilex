@@ -60,14 +60,24 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
   };
 
   return (
-    <div style={{
-      background: 'rgba(20, 20, 20, 0.6)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(200, 150, 100, 0.3)',
-      borderRadius: '12px',
-      padding: '30px',
-      marginBottom: '30px',
-    }}>
+    <>
+      <style jsx>{`
+        .team-performance-container {
+          background: rgba(20, 20, 20, 0.6);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(200, 150, 100, 0.3);
+          border-radius: 12px;
+          padding: 30px;
+          margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+          .team-performance-container {
+            padding: 20px;
+            margin-top: 16px;
+          }
+        }
+      `}</style>
+      <div className="team-performance-container">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -311,5 +321,6 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
         </div>
       )}
     </div>
+    </>
   );
 }

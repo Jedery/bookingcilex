@@ -50,18 +50,25 @@ export default function KPICards({ cards }: KPICardsProps) {
 
           .kpi-card-header {
             margin-bottom: 16px !important;
+            align-items: flex-start !important;
+            min-height: 44px;
           }
 
           .kpi-card-label {
             font-size: 10px !important;
             letter-spacing: 1px !important;
             max-width: 65%;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            min-height: 44px;
           }
 
           .kpi-card-icon {
             width: 44px !important;
             height: 44px !important;
             border-radius: 12px !important;
+            flex-shrink: 0;
           }
 
           .kpi-card-icon svg {

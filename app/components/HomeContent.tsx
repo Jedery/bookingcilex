@@ -370,21 +370,35 @@ export default function HomeContent() {
         <KPICards cards={kpiCards} />
 
         {/* Period Selector for Team Performance */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          marginBottom: '20px',
-          marginTop: '32px',
-        }}>
-          <h3 style={{ 
-            fontSize: '28px', 
-            fontWeight: '700', 
-            letterSpacing: '-0.5px',
-            color: '#fff',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-          }}>
+        <style jsx>{`
+          .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 32px;
+          }
+          .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+          }
+           @media (max-width: 768px) {
+            .section-header {
+              flex-direction: row;
+              align-items: center;
+              margin-top: 24px;
+            }
+            .section-title {
+              font-size: 20px;
+            }
+          }
+        `}</style>
+        <div className="section-header">
+          <h3 className="section-title">
             {t('dashboard.teamAnalysis')}
           </h3>
           <select
@@ -400,6 +414,7 @@ export default function HomeContent() {
               fontWeight: '300',
               cursor: 'pointer',
               outline: 'none',
+              maxWidth: '140px',
             }}
           >
             <option value="today">{t('dashboard.today')}</option>

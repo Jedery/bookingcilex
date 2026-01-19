@@ -1394,14 +1394,30 @@ export default function BookingConfigPage() {
         )}
 
         {/* Action Buttons */}
-        <div style={{ 
-          position: 'fixed', 
-          bottom: '30px', 
-          right: '30px', 
-          display: 'flex', 
-          gap: '12px',
-          zIndex: 1000,
-        }}>
+        <style jsx>{`
+          .action-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+          }
+          @media (max-width: 768px) {
+            .action-buttons {
+              bottom: 90px;
+              right: 15px;
+              left: 15px;
+              justify-content: space-between;
+            }
+            .action-buttons button {
+              padding: 12px 16px !important;
+              font-size: 14px !important;
+              flex: 1;
+            }
+          }
+        `}</style>
+        <div className="action-buttons">
           <button
             onClick={resetConfiguration}
             style={{

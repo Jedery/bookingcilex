@@ -68,36 +68,56 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
   };
 
   return (
-    <div style={{
-      background: 'rgba(20, 20, 20, 0.6)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(200, 150, 100, 0.3)',
-      borderRadius: '12px',
-      padding: '30px',
-      marginBottom: '30px',
-    }}>
-      {/* Header con filtri */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '30px',
-        flexWrap: 'wrap',
-        gap: '15px',
-      }}>
-        <h3 style={{ 
-          fontSize: '28px', 
-          fontWeight: '700', 
-          color: '#fff', 
-          letterSpacing: '-0.5px',
-          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-          textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
-        }}>
-          {t('sellerAnalytics.title')}
-        </h3>
+    <>
+      <style jsx>{`
+        .seller-analytics-container {
+          background: rgba(20, 20, 20, 0.6);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(200, 150, 100, 0.3);
+          border-radius: 12px;
+          padding: 30px;
+          margin-bottom: 30px;
+        }
+        .seller-analytics-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 30px;
+          flex-wrap: wrap;
+          gap: 15px;
+        }
+        .seller-analytics-title {
+          fontSize: 28px;
+          font-weight: 700;
+          color: #fff;
+          letter-spacing: -0.5px;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        @media (max-width: 768px) {
+          .seller-analytics-container {
+            padding: 20px;
+            margin-top: 24px;
+          }
+          .seller-analytics-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .seller-analytics-title {
+            font-size: 20px;
+            width: 100%;
+          }
+        }
+      `}</style>
+      <div className="seller-analytics-container">
+        {/* Header con filtri */}
+        <div className="seller-analytics-header">
+          <h3 className="seller-analytics-title">
+            {t('sellerAnalytics.title')}
+          </h3>
 
-        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-          {/* Filtro Venditore */}
+          <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+            {/* Filtro Venditore */}
           <select
             value={selectedSeller}
             onChange={(e) => setSelectedSeller(e.target.value)}
@@ -420,5 +440,6 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
         </div>
       )}
     </div>
+    </>
   );
 }
