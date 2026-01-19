@@ -301,12 +301,15 @@ export default function HomeContent() {
         </div>
 
         <h2 style={{ 
-          marginBottom: '25px', 
+          marginBottom: '30px', 
+          marginTop: '10px',
           fontSize: '28px', 
           fontWeight: '200', 
           letterSpacing: '2px',
           color: '#fff',
-        }}>
+        }}
+        className="dashboard-title"
+        >
           Dashboard Overview
         </h2>
 

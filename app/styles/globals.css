@@ -178,7 +178,7 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 30px 40px;
+  padding: 35px 45px;
   overflow-y: auto;
   background: transparent;
   max-width: 100%;
@@ -188,7 +188,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
   padding: 10px 0;
   min-height: 60px;
 }
@@ -799,7 +799,7 @@ table th {
   }
 
   .main-content {
-    padding: 90px 20px 20px;
+    padding: 110px 20px 20px;
     width: 100%;
   }
 
@@ -840,6 +840,13 @@ table th {
 
   .language-switcher-mobile {
     display: flex !important;
+  }
+
+  /* Titolo dashboard con più spazio su mobile */
+  .dashboard-title {
+    margin-top: 15px !important;
+    margin-bottom: 35px !important;
+    font-size: 24px !important;
   }
 
   .footer-buttons {
