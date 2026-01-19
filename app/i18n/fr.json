@@ -22,6 +22,15 @@
     "thisWeek": "Cette Semaine",
     "thisMonth": "Ce Mois"
   },
+  "kpi": {
+    "totalBookings": "Total des Réservations",
+    "confirmed": "Confirmés",
+    "pending": "En Attente",
+    "cancelled": "Annulés"
+  },
+  "teamPerformance": {
+    "title": "Performance de l'Équipe"
+  },
   "greeting": "Bonjour",
   "bookingResumes": "Résumé des Réservations",
   "confirmedAndPaid": "Confirmé et Payé",

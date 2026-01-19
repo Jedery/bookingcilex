@@ -17,15 +17,10 @@ interface SalesData {
 interface TeamPerformanceProps {
   salesData: SalesData[];
   period: 'today' | 'week' | 'month';
+  t: (key: string) => string;
 }
 
-export default function TeamPerformance({ salesData, period }: TeamPerformanceProps) {
-  const periodLabels = {
-    today: 'Oggi',
-    week: 'Questa Settimana',
-    month: 'Questo Mese',
-  };
-
+export default function TeamPerformance({ salesData, period, t }: TeamPerformanceProps) {
   return (
     <div style={{
       background: 'rgba(20, 20, 20, 0.6)',
@@ -37,7 +32,7 @@ export default function TeamPerformance({ salesData, period }: TeamPerformancePr
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <h3 style={{ fontSize: '20px', fontWeight: '300', color: '#fff', letterSpacing: '2px' }}>
-          Performance Team - {periodLabels[period]}
+          {t('teamPerformance.title')} - {t(`dashboard.${period === 'today' ? 'today' : period === 'week' ? 'thisWeek' : 'thisMonth'}`)}
         </h3>
       </div>
 

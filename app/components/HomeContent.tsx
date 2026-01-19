@@ -110,7 +110,7 @@ export default function HomeContent() {
 
   const kpiCards = [
     {
-      label: 'Totale Bookings',
+      label: t('kpi.totalBookings'),
       value: dashboardData.totalBookings,
       change: 12,
       icon: '📊',
@@ -118,7 +118,7 @@ export default function HomeContent() {
       bgColor: 'rgba(200, 150, 100, 0.1)',
     },
     {
-      label: 'Confermati',
+      label: t('kpi.confirmed'),
       value: dashboardData.confirmedBookings,
       change: 18,
       icon: '✅',
@@ -126,7 +126,7 @@ export default function HomeContent() {
       bgColor: 'rgba(72, 199, 116, 0.1)',
     },
     {
-      label: 'In Sospeso',
+      label: t('kpi.pending'),
       value: dashboardData.pendingBookings,
       change: -5,
       icon: '⏳',
@@ -134,7 +134,7 @@ export default function HomeContent() {
       bgColor: 'rgba(255, 193, 7, 0.1)',
     },
     {
-      label: 'Cancellati',
+      label: t('kpi.cancelled'),
       value: dashboardData.cancelledBookings,
       change: -12,
       icon: '❌',
@@ -351,7 +351,7 @@ export default function HomeContent() {
           </select>
         </div>
 
-        <TeamPerformance salesData={teamSalesData} period={period} />
+        <TeamPerformance salesData={teamSalesData} period={period} t={t} />
 
         <RevenueChart />
 

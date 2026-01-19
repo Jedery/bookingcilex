@@ -22,6 +22,15 @@
     "thisWeek": "This Week",
     "thisMonth": "This Month"
   },
+  "kpi": {
+    "totalBookings": "Total Bookings",
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  },
+  "teamPerformance": {
+    "title": "Team Performance"
+  },
   "greeting": "Hello",
   "bookingResumes": "Booking Resumes",
   "confirmedAndPaid": "Confirmed and Paid",
