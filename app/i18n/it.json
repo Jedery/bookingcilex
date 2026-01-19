@@ -31,6 +31,25 @@
   "teamPerformance": {
     "title": "Performance Team"
   },
+  "sellerAnalytics": {
+    "title": "Analisi Venditori Individuale",
+    "allSellers": "Tutti i Venditori",
+    "daily": "Giornaliero",
+    "weekly": "Settimanale",
+    "monthly": "Mensile",
+    "tickets": "Ticket",
+    "revenue": "Incasso",
+    "paymentMethods": "Metodi di Pagamento",
+    "cash": "Contanti",
+    "card": "Carta",
+    "transfer": "Bonifico",
+    "avgTicket": "Ticket Medio",
+    "totalSummary": "Riepilogo Totale",
+    "totalTickets": "Totale Ticket",
+    "totalRevenue": "Incasso Totale",
+    "totalCash": "Totale Contanti",
+    "totalCard": "Totale Carta"
+  },
   "greeting": "Ciao",
   "bookingResumes": "Riassunto Prenotazioni",
   "confirmedAndPaid": "Confermato e Pagato",

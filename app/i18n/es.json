@@ -31,6 +31,25 @@
   "teamPerformance": {
     "title": "Rendimiento del Equipo"
   },
+  "sellerAnalytics": {
+    "title": "Análisis Individual de Vendedores",
+    "allSellers": "Todos los Vendedores",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "tickets": "Entradas",
+    "revenue": "Ingresos",
+    "paymentMethods": "Métodos de Pago",
+    "cash": "Efectivo",
+    "card": "Tarjeta",
+    "transfer": "Transferencia",
+    "avgTicket": "Entrada Media",
+    "totalSummary": "Resumen Total",
+    "totalTickets": "Total Entradas",
+    "totalRevenue": "Ingresos Totales",
+    "totalCash": "Total Efectivo",
+    "totalCard": "Total Tarjeta"
+  },
   "greeting": "Hola",
   "bookingResumes": "Resumen de Reservas",
   "confirmedAndPaid": "Confirmado y Pagado",

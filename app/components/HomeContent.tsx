@@ -6,6 +6,7 @@ import KPICards from './KPICards';
 import RevenueChart from './RevenueChart';
 import RecentTransactions from './RecentTransactions';
 import TeamPerformance from './TeamPerformance';
+import SellerAnalytics from './SellerAnalytics';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/useTranslation';
 import { useAuth } from '../context/AuthContext';
@@ -107,6 +108,50 @@ export default function HomeContent() {
       })
       .catch((error) => console.error('Error fetching dashboard data:', error));
   }, []);
+
+  // Mock data per Seller Analytics - da sostituire con dati reali
+  const sellerAnalyticsData = [
+    {
+      sellerId: '1',
+      sellerName: 'Marco Rossi',
+      role: 'Promoter',
+      daily: { tickets: 5, revenue: 1200, cash: 600, card: 400, pos: 150, transfer: 50, avgTicketValue: 240 },
+      weekly: { tickets: 22, revenue: 6800, cash: 3200, card: 2400, pos: 800, transfer: 400, avgTicketValue: 309 },
+      monthly: { tickets: 95, revenue: 28500, cash: 14000, card: 9500, pos: 3500, transfer: 1500, avgTicketValue: 300 },
+      trend: 'up' as const,
+      trendPercentage: 18,
+    },
+    {
+      sellerId: '2',
+      sellerName: 'Sara Bianchi',
+      role: 'Promoter',
+      daily: { tickets: 8, revenue: 2100, cash: 900, card: 800, pos: 300, transfer: 100, avgTicketValue: 262.5 },
+      weekly: { tickets: 35, revenue: 10200, cash: 5000, card: 3500, pos: 1200, transfer: 500, avgTicketValue: 291 },
+      monthly: { tickets: 142, revenue: 42600, cash: 20000, card: 15000, pos: 5100, transfer: 2500, avgTicketValue: 300 },
+      trend: 'up' as const,
+      trendPercentage: 25,
+    },
+    {
+      sellerId: '3',
+      sellerName: 'Luca Verdi',
+      role: 'Manager',
+      daily: { tickets: 3, revenue: 950, cash: 500, card: 350, pos: 100, transfer: 0, avgTicketValue: 316.7 },
+      weekly: { tickets: 18, revenue: 5400, cash: 2800, card: 1900, pos: 600, transfer: 100, avgTicketValue: 300 },
+      monthly: { tickets: 78, revenue: 23400, cash: 12000, card: 8000, pos: 2600, transfer: 800, avgTicketValue: 300 },
+      trend: 'down' as const,
+      trendPercentage: -5,
+    },
+    {
+      sellerId: '4',
+      sellerName: 'Anna Neri',
+      role: 'Promoter',
+      daily: { tickets: 6, revenue: 1650, cash: 800, card: 600, pos: 200, transfer: 50, avgTicketValue: 275 },
+      weekly: { tickets: 28, revenue: 8200, cash: 4000, card: 2800, pos: 1000, transfer: 400, avgTicketValue: 293 },
+      monthly: { tickets: 118, revenue: 35400, cash: 17000, card: 12000, pos: 4500, transfer: 1900, avgTicketValue: 300 },
+      trend: 'stable' as const,
+      trendPercentage: 2,
+    },
+  ];
 
   const kpiCards = [
     {
@@ -352,6 +397,11 @@ export default function HomeContent() {
         </div>
 
         <TeamPerformance salesData={teamSalesData} period={period} t={t} />
+
+        {/* Seller Analytics - Solo per SuperAdmin e Founder */}
+        {(user?.role === 'SuperAdmin' || user?.role === 'Founder') && (
+          <SellerAnalytics sellers={sellerAnalyticsData} t={t} />
+        )}
 
         <RevenueChart />
 

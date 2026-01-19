@@ -31,6 +31,25 @@
   "teamPerformance": {
     "title": "Team Performance"
   },
+  "sellerAnalytics": {
+    "title": "Individual Seller Analytics",
+    "allSellers": "All Sellers",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "tickets": "Tickets",
+    "revenue": "Revenue",
+    "paymentMethods": "Payment Methods",
+    "cash": "Cash",
+    "card": "Card",
+    "transfer": "Transfer",
+    "avgTicket": "Avg Ticket",
+    "totalSummary": "Total Summary",
+    "totalTickets": "Total Tickets",
+    "totalRevenue": "Total Revenue",
+    "totalCash": "Total Cash",
+    "totalCard": "Total Card"
+  },
   "greeting": "Hello",
   "bookingResumes": "Booking Resumes",
   "confirmedAndPaid": "Confirmed and Paid",
