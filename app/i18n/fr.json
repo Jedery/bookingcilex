@@ -4,6 +4,7 @@
     "dashboard": "Tableau de bord",
     "bookings": "Réservations",    "myProfile": "Mon Profil",
     "manageProfiles": "Gérer les Profils",    "profile": "Mon Profil",
+    "bookingConfig": "Configuration des Réservations",
     "logout": "Déconnexion"
   },
   "header": {

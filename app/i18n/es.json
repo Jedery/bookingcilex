@@ -4,6 +4,7 @@
     "dashboard": "Panel de Control",
     "bookings": "Reservas",    "myProfile": "Mi Perfil",
     "manageProfiles": "Gestionar Perfiles",    "profile": "Mi Perfil",
+    "bookingConfig": "Configuración de Reservas",
     "logout": "Cerrar Sesión"
   },
   "header": {

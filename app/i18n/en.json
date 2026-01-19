@@ -4,6 +4,7 @@
     "dashboard": "Dashboard",
     "bookings": "Bookings",    "myProfile": "My Profile",
     "manageProfiles": "Manage Profiles",    "profile": "My Profile",
+    "bookingConfig": "Booking Configuration",
     "logout": "Logout"
   },
   "header": {
