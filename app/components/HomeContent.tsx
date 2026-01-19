@@ -149,52 +149,72 @@ export default function HomeContent() {
       <div className="main-content">
         <div className="header" style={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
+          justifyContent: 'flex-end', 
           alignItems: 'center',
           marginBottom: '30px',
         }}>
-          <div style={{ flex: 1, maxWidth: '400px' }}>
-            <div style={{ position: 'relative' }}>
-              <Search 
-                size={18} 
-                style={{ 
-                  position: 'absolute', 
-                  left: '15px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)', 
-                  color: '#888' 
-                }} 
-              />
-              <input
-                type="text"
-                placeholder="Search..."
-                style={{
-                  width: '100%',
-                  padding: '12px 15px 12px 45px',
-                  background: 'rgba(10, 10, 10, 0.6)',
-                  border: '1px solid rgba(200, 150, 100, 0.3)',
-                  borderRadius: '8px',
-                  color: '#fff',
-                  fontSize: '14px',
-                  fontWeight: '300',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(200, 150, 100, 0.6)';
-                  e.target.style.boxShadow = '0 0 20px rgba(200, 150, 100, 0.2)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(200, 150, 100, 0.3)';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
+          {/* Desktop: Mostra tutto */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '20px',
+            width: '100%',
+          }}>
+            {/* Search Bar - Solo Desktop */}
+            <div style={{ 
+              flex: 1, 
+              maxWidth: '400px',
+              display: 'block',
+            }}
+              className="search-desktop"
+            >
+              <div style={{ position: 'relative' }}>
+                <Search 
+                  size={18} 
+                  style={{ 
+                    position: 'absolute', 
+                    left: '15px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    color: '#888' 
+                  }} 
+                />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  style={{
+                    width: '100%',
+                    padding: '12px 15px 12px 45px',
+                    background: 'rgba(10, 10, 10, 0.6)',
+                    border: '1px solid rgba(200, 150, 100, 0.3)',
+                    borderRadius: '8px',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: '300',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'rgba(200, 150, 100, 0.6)';
+                    e.target.style.boxShadow = '0 0 20px rgba(200, 150, 100, 0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(200, 150, 100, 0.3)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <LanguageSwitcher language={language} setLanguage={setLanguage} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Language Switcher - Compatto per mobile */}
+            <div>
+              <LanguageSwitcher language={language} setLanguage={setLanguage} />
+            </div>
+
+            {/* User Info - Solo Desktop */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
+              className="user-info-desktop"
+            >
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '14px', fontWeight: '400', color: '#fff' }}>
                   {user?.name || 'Guest'}

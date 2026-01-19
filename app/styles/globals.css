@@ -725,6 +725,24 @@ table th {
   z-index: 999;
 }
 
+/* Language Switcher - Desktop/Mobile */
+.language-switcher-mobile {
+  display: none;
+}
+
+.language-switcher-full {
+  display: block;
+}
+
+/* Search and User Info - Desktop Only */
+.search-desktop {
+  display: block;
+}
+
+.user-info-desktop {
+  display: flex;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .mobile-menu-button {
@@ -760,9 +778,29 @@ table th {
   }
 
   .header {
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    gap: 12px;
+    align-items: center;
+  }
+
+  /* Nascondi search su mobile */
+  .search-desktop {
+    display: none !important;
+  }
+
+  /* Nascondi user info su mobile */
+  .user-info-desktop {
+    display: none !important;
+  }
+
+  /* Mostra solo bandiera su mobile */
+  .language-switcher-full {
+    display: none !important;
+  }
+
+  .language-switcher-mobile {
+    display: block !important;
   }
 
   .footer-buttons {
