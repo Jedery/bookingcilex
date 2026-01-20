@@ -17,10 +17,12 @@ interface SalesData {
 interface TeamPerformanceProps {
   salesData: SalesData[];
   period: 'today' | 'week' | 'month';
+  setPeriod: (period: 'today' | 'week' | 'month') => void;
   t: (key: string) => string;
+  onSelectSeller?: (seller: SalesData) => void;
 }
 
-export default function TeamPerformance({ salesData, period, t }: TeamPerformanceProps) {
+export default function TeamPerformance({ salesData, period, setPeriod, t, onSelectSeller }: TeamPerformanceProps) {
   // Ordina per revenue decrescente
   const sortedData = [...salesData].sort((a, b) => b.revenue - a.revenue);
 
@@ -67,19 +69,65 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
           backdrop-filter: blur(10px);
           border: 1px solid rgba(200, 150, 100, 0.3);
           border-radius: 12px;
-          padding: 30px;
-          margin-bottom: 30px;
+          padding: 24px;
+          margin-bottom: 20px;
+          margin-top: 24px;
+        }
+        .member-card {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          position: relative;
+          z-index: 1;
+        }
+        .member-position {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .member-info {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          flex: 1;
+          min-width: 0;
+        }
+        .member-stats {
+          display: flex;
+          gap: 30px;
+          align-items: center;
         }
         @media (max-width: 768px) {
           .team-performance-container {
-            padding: 20px;
+            padding: 16px;
             margin-top: 16px;
+          }
+          .member-card {
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+          .member-position {
+            min-width: 50px;
+          }
+          .member-info {
+            flex: 1;
+            min-width: 120px;
+          }
+          .member-stats {
+            width: 100%;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 8px;
+            padding-left: 62px;
+          }
+          .stat-item {
+            text-align: center;
           }
         }
       `}</style>
       <div className="team-performance-container">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{
             width: '50px',
@@ -102,7 +150,7 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
               fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
               textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
             }}>
-              🏆 Classifica Team
+              Classifica Team
             </h3>
             <p style={{ 
               fontSize: '13px', 
@@ -116,10 +164,31 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
             </p>
           </div>
         </div>
+        
+        {/* Period Selector */}
+        <select
+          value={period}
+          onChange={(e) => setPeriod(e.target.value as 'today' | 'week' | 'month')}
+          style={{
+            padding: '10px 20px',
+            background: 'rgba(10, 10, 10, 0.6)',
+            border: '1px solid rgba(200, 150, 100, 0.3)',
+            borderRadius: '8px',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: '300',
+            cursor: 'pointer',
+            outline: 'none',
+          }}
+        >
+          <option value="today">{t('dashboard.today')}</option>
+          <option value="week">{t('dashboard.thisWeek')}</option>
+          <option value="month">{t('dashboard.thisMonth')}</option>
+        </select>
       </div>
 
       {/* Leaderboard */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {sortedData.map((member, index) => {
           const colors = getPositionColor(index);
           const isTopThree = index < 3;
@@ -130,12 +199,14 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
               style={{
                 background: colors.bg,
                 border: `2px solid ${colors.border}`,
-                borderRadius: '16px',
-                padding: isTopThree ? '25px' : '20px',
+                borderRadius: '10px',
+                padding: isTopThree ? '12px 16px' : '10px 14px',
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 overflow: 'hidden',
+                cursor: 'pointer',
               }}
+              onClick={() => onSelectSeller?.(member)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateX(5px)';
                 e.currentTarget.style.boxShadow = `0 8px 24px ${colors.border}`;
@@ -158,138 +229,106 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
                 }} />
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative', zIndex: 1 }}>
-                {/* Position & Medal */}
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center',
-                  minWidth: isTopThree ? '80px' : '60px',
-                }}>
-                  {getMedalIcon(index)}
+              <div className="member-card">
+                {/* Position Number (only from 4th place) */}
+                {!isTopThree && (
                   <div style={{
-                    fontSize: isTopThree ? '32px' : '24px',
+                    fontSize: '18px',
                     fontWeight: '700',
                     color: colors.text,
-                    marginTop: '8px',
-                    textShadow: isTopThree ? `0 0 20px ${colors.text}40` : 'none',
+                    minWidth: '32px',
+                    textAlign: 'center',
                   }}>
                     #{index + 1}
                   </div>
-                </div>
+                )}
 
-                {/* Avatar & Name */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1 }}>
+                {/* Avatar & Info */}
+                <div className="member-info">
+                  {/* Avatar */}
                   <div style={{
-                    width: isTopThree ? '64px' : '56px',
-                    height: isTopThree ? '64px' : '56px',
+                    width: isTopThree ? '50px' : '44px',
+                    height: isTopThree ? '50px' : '44px',
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #c89664 0%, #d4a574 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: isTopThree ? '26px' : '22px',
+                    fontSize: isTopThree ? '22px' : '18px',
                     fontWeight: '600',
                     color: '#0a0a0a',
-                    border: isTopThree ? `3px solid ${colors.text}` : '2px solid rgba(200, 150, 100, 0.3)',
-                    boxShadow: isTopThree ? `0 4px 16px ${colors.text}40` : 'none',
+                    border: isTopThree ? `2px solid ${colors.text}` : '2px solid rgba(200, 150, 100, 0.2)',
+                    boxShadow: isTopThree ? `0 3px 12px ${colors.text}30` : 'none',
+                    flexShrink: 0,
                   }}>
                     {member.name.charAt(0).toUpperCase()}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ 
-                      fontSize: isTopThree ? '20px' : '18px', 
-                      fontWeight: isTopThree ? '600' : '400', 
-                      color: '#fff',
-                      letterSpacing: '0.5px',
-                    }}>
-                      {member.name}
+                  
+                  {/* Name, Role & Stats */}
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ 
+                        fontSize: isTopThree ? '17px' : '15px', 
+                        fontWeight: isTopThree ? '600' : '500', 
+                        color: '#fff',
+                        letterSpacing: '0.2px',
+                      }}>
+                        {member.name}
+                      </div>
+                      <div style={{ 
+                        fontSize: '10px', 
+                        color: colors.text, 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '1px',
+                        fontWeight: '600',
+                      }}>
+                        {member.role}
+                      </div>
                     </div>
-                    <div style={{ 
-                      fontSize: '12px', 
-                      color: colors.text, 
-                      marginTop: '4px', 
-                      textTransform: 'uppercase', 
-                      letterSpacing: '1.5px',
-                      fontWeight: '600',
-                    }}>
-                      {member.role}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Stats */}
-                <div style={{ 
-                  display: 'flex', 
-                  gap: isTopThree ? '30px' : '20px',
-                  alignItems: 'center',
-                }}>
-                  {/* Revenue */}
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px', letterSpacing: '1px' }}>
-                      FATTURATO
-                    </div>
-                    <div style={{ 
-                      fontSize: isTopThree ? '28px' : '24px', 
-                      fontWeight: '700', 
-                      color: '#48c774',
-                      textShadow: isTopThree ? '0 0 20px rgba(72, 199, 116, 0.3)' : 'none',
-                    }}>
-                      {formatCurrency(member.revenue)}
-                    </div>
-                  </div>
-
-                  {/* Sales */}
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px', letterSpacing: '1px' }}>
-                      VENDITE
-                    </div>
-                    <div style={{ 
-                      fontSize: isTopThree ? '28px' : '24px', 
-                      fontWeight: '700', 
-                      color: colors.text,
-                    }}>
-                      {member.totalSales}
-                    </div>
-                    <div style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>
-                      {member.confirmedSales} confermate
-                    </div>
-                  </div>
-
-                  {/* Conversion Rate */}
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px', letterSpacing: '1px' }}>
-                      CONVERSIONE
-                    </div>
-                    <div style={{ 
-                      fontSize: isTopThree ? '28px' : '24px', 
-                      fontWeight: '700', 
-                      color: '#4ecdc4',
-                    }}>
-                      {((member.confirmedSales / member.totalSales) * 100 || 0).toFixed(0)}%
-                    </div>
-                    <div style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>
-                      ⚡ {member.avgConfirmTime}
+                    
+                    {/* Sales inline */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                        <span style={{ 
+                          fontSize: isTopThree ? '20px' : '18px', 
+                          fontWeight: '700', 
+                          color: colors.text,
+                        }}>
+                          {member.totalSales}
+                        </span>
+                        <span style={{ fontSize: '11px', color: '#888' }}>vendite</span>
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#888' }}>
+                        ✓ {member.confirmedSales} conf.
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#666' }}>
+                        ⏳ {member.pendingSales} sosp.
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Top 3 Badge */}
+              {/* Top 3 Badge with Medal */}
               {isTopThree && (
                 <div style={{
                   position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  padding: '4px 12px',
+                  top: '8px',
+                  right: '8px',
+                  padding: '4px 10px',
                   background: colors.text,
                   color: '#0a0a0a',
-                  borderRadius: '20px',
+                  borderRadius: '16px',
                   fontSize: '10px',
                   fontWeight: '700',
-                  letterSpacing: '1px',
+                  letterSpacing: '0.8px',
                   textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  boxShadow: `0 2px 8px ${colors.text}40`,
                 }}>
+                  <span style={{ fontSize: '14px' }}>{['🏆', '🥈', '🥉'][index]}</span>
                   Top {index + 1}
                 </div>
               )}
@@ -321,6 +360,34 @@ export default function TeamPerformance({ salesData, period, t }: TeamPerformanc
         </div>
       )}
     </div>
+
+    <style jsx>{`
+      .member-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .member-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      @media (max-width: 768px) {
+        .member-card {
+          gap: 10px;
+        }
+
+        .member-info {
+          gap: 10px;
+        }
+      }
+    `}</style>
     </>
   );
 }

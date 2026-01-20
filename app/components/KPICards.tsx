@@ -41,6 +41,7 @@ export default function KPICards({ cards }: KPICardsProps) {
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 0;
+            margin-top: 20px;
           }
 
           .kpi-card {

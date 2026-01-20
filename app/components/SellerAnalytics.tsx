@@ -96,12 +96,15 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
         }
         @media (max-width: 768px) {
           .seller-analytics-container {
-            padding: 20px;
-            margin-top: 24px;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 12px;
           }
           .seller-analytics-header {
             flex-direction: column;
             align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 12px;
           }
           .seller-analytics-title {
             font-size: 20px;
@@ -112,10 +115,6 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
       <div className="seller-analytics-container">
         {/* Header con filtri */}
         <div className="seller-analytics-header">
-          <h3 className="seller-analytics-title">
-            {t('sellerAnalytics.title')}
-          </h3>
-
           <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
             {/* Filtro Venditore */}
           <select
@@ -165,8 +164,8 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
       {/* Grid venditori */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-        gap: '20px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '16px',
       }}>
         {filteredSellers.map((seller) => {
           const data = getPeriodData(seller);
@@ -176,9 +175,9 @@ export default function SellerAnalytics({ sellers, t }: SellerAnalyticsProps) {
               key={seller.sellerId}
               style={{
                 background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.8), rgba(15, 15, 18, 0.9))',
-                border: '1px solid rgba(200, 150, 100, 0.3)',
-                borderRadius: '12px',
-                padding: '24px',
+                border: '2px solid rgba(200, 150, 100, 0.3)',
+                borderRadius: '16px',
+                padding: '20px',
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
               }}
