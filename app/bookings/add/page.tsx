@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import { useTranslation } from '../../i18n/useTranslation';
+import { Calendar, Wallet, User, Ticket, Globe, Info, Clock, Users, CreditCard, Mail, Phone, Check } from 'lucide-react';
 
 // Configurazione default eventi - NON USARE DIRETTAMENTE, caricare sempre da localStorage!
 // Questa è solo una configurazione di fallback se localStorage è vuoto
@@ -111,14 +112,48 @@ export default function AddBooking() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [numberOfPeople, setNumberOfPeople] = useState(0);
   const [bookingId, setBookingId] = useState('');
   const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
+  const [isPeopleDropdownOpen, setIsPeopleDropdownOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [createdBy, setCreatedBy] = useState({
     role: 'superadmin',
     name: 'Ignazio Ibiza',
     timestamp: new Date().toISOString(),
   });
+
+  // Helper function per verificare se un campo è completato
+  const isStepCompleted = (step: number): boolean => {
+    switch(step) {
+      case 0: return !!selectedEvent;
+      case 1: return !!selectedEvent && !!selectedDate;
+      case 2: return !!selectedEvent && !!selectedDate && !!selectedTime;
+      case 3: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0;
+      case 4: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod;
+      case 5: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0;
+      case 6: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0 && !!formData.firstName;
+      case 7: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0 && !!formData.firstName && !!formData.lastName;
+      case 8: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0 && !!formData.firstName && !!formData.lastName && !!formData.email;
+      case 9: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0 && !!formData.firstName && !!formData.lastName && !!formData.email && !!formData.country;
+      case 10: return !!selectedEvent && !!selectedDate && !!selectedTime && numberOfPeople > 0 && !!selectedPaymentMethod && !!formData.deposit && parseFloat(formData.deposit) > 0 && !!formData.firstName && !!formData.lastName && !!formData.email && !!formData.country && !!formData.phone;
+      default: return false;
+    }
+  };
+
+  // Helper function per ottenere il prefisso in base al paese
+  const getCountryPrefix = (country: string): string => {
+    const prefixes: { [key: string]: string } = {
+      'Italy': '+39',
+      'Spain': '+34',
+      'France': '+33',
+      'UK': '+44',
+      'Germany': '+49',
+      'USA': '+1',
+      'Other': '+',
+    };
+    return prefixes[country] || '';
+  };
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -143,6 +178,7 @@ export default function AddBooking() {
     eventName: '',
     eventDate: '',
     eventTime: '',
+    salesZone: '', // Nuovo campo Zona Vendita
   });
 
   const [languageToggles, setLanguageToggles] = useState({
@@ -191,11 +227,11 @@ export default function AddBooking() {
   }, [eventsGroups]);
 
   useEffect(() => {
-    // Calcola prezzo automaticamente quando cambia evento o metodo di pagamento
-    if (selectedEvent && selectedDate && selectedTime) {
+    // Calcola prezzo automaticamente quando cambia evento, metodo di pagamento o numero di persone
+    if (selectedEvent && selectedDate && selectedTime && numberOfPeople > 0) {
       calculateAutomaticPrice();
     }
-  }, [selectedEvent, selectedDate, selectedTime, selectedPaymentMethod]);
+  }, [selectedEvent, selectedDate, selectedTime, selectedPaymentMethod, numberOfPeople]);
 
   const generateBookingId = () => {
     const timestamp = Date.now();
@@ -205,21 +241,24 @@ export default function AddBooking() {
   };
 
   const calculateAutomaticPrice = () => {
-    if (!selectedEvent) return;
+    if (!selectedEvent || numberOfPeople <= 0) return;
     
-    let price = selectedEvent.basePrice;
+    let pricePerPerson = selectedEvent.basePrice;
     
     // Applica tassa del 5% solo per carta, POS e bonifico
     if (selectedPaymentMethod === 'card' || selectedPaymentMethod === 'pos' || selectedPaymentMethod === 'transfer') {
-      const tax = price * 0.05;
-      price = price + tax;
+      const tax = pricePerPerson * 0.05;
+      pricePerPerson = pricePerPerson + tax;
     }
+    
+    // Moltiplica per il numero di persone
+    const totalPrice = pricePerPerson * numberOfPeople;
     
     setFormData(prev => ({
       ...prev,
-      price: price.toFixed(2),
-      total: price.toFixed(2),
-      toPay: price.toFixed(2),
+      price: totalPrice.toFixed(2),
+      total: totalPrice.toFixed(2),
+      toPay: totalPrice.toFixed(2),
     }));
   };
 
@@ -296,11 +335,11 @@ export default function AddBooking() {
         alert('✅ Prenotazione creata con successo!');
         router.push('/bookings/list');
       } else {
-        alert('❌ Errore nella creazione della prenotazione');
+        alert('Errore nella creazione della prenotazione');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Si è verificato un errore');
+      alert('Si è verificato un errore');
     } finally {
       setLoading(false);
     }
@@ -314,19 +353,80 @@ export default function AddBooking() {
           <h1 style={{ fontSize: '32px', fontWeight: '700' }}>Aggiungi Prenotazione</h1>
         </div>
 
+        {/* Progress Indicator */}
+        <div 
+          className="hide-on-mobile"
+          style={{
+          background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%)',
+          border: '1px solid rgba(200, 150, 100, 0.3)',
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '24px',
+          backdropFilter: 'blur(30px)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#c89664' }}>Progresso:</span>
+            {[
+              { step: 1, label: '1. Evento', icon: <Ticket size={14} /> },
+              { step: 2, label: '2. Data', icon: <Calendar size={14} /> },
+              { step: 3, label: '3. Orario', icon: <Clock size={14} /> },
+              { step: 4, label: '4. N. Persone', icon: <Users size={14} /> },
+              { step: 5, label: '5. Pagamento', icon: <CreditCard size={14} /> },
+              { step: 6, label: '6. Acconto', icon: <Wallet size={14} /> },
+              { step: 7, label: '7. Nome', icon: <User size={14} /> },
+              { step: 8, label: '8. Cognome', icon: <User size={14} /> },
+              { step: 9, label: '9. Email', icon: <Mail size={14} /> },
+              { step: 10, label: '10. Paese', icon: <Globe size={14} /> },
+              { step: 11, label: '11. Telefono', icon: <Phone size={14} /> },
+            ].map((item) => (
+              <div
+                key={item.step}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  background: isStepCompleted(item.step) ? 'linear-gradient(135deg, rgba(200, 150, 100, 0.25), rgba(200, 150, 100, 0.15))' : 'rgba(100, 100, 100, 0.1)',
+                  color: isStepCompleted(item.step) ? '#c89664' : '#666',
+                  border: `2px solid ${isStepCompleted(item.step) ? 'rgba(200, 150, 100, 0.5)' : 'rgba(100, 100, 100, 0.2)'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isStepCompleted(item.step) ? '0 4px 12px rgba(200, 150, 100, 0.2)' : 'none',
+                }}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+                {isStepCompleted(item.step) && <Check size={16} color="#48c774" />}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
             
             {/* ========== COLONNA 1: EVENTO E DATA ========== */}
             <div className="card" style={{ 
-              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
-              border: '2px solid rgba(251, 191, 36, 0.5)',
-              borderRadius: '16px',
-              padding: '24px',
-              boxShadow: '0 0 20px rgba(251, 191, 36, 0.15)',
+              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.98) 100%)',
+              border: '2px solid rgba(200, 150, 100, 0.25)',
+              borderRadius: '20px',
+              padding: '32px',
+              backdropFilter: 'blur(30px)',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#fbbf24' }}>
-                📅 Dettagli Evento
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Calendar size={20} color="#c89664" />
+                Dettagli Evento
               </h3>
 
               {/* Scegli Evento - Custom Dropdown */}
@@ -342,7 +442,7 @@ export default function AddBooking() {
                     width: '100%',
                     padding: '16px',
                     backgroundColor: selectedEvent ? '#0f1419' : '#1a1a1e',
-                    border: selectedEvent ? `2px solid ${eventsGroups.find(g => g.events.some(e => e.id === selectedEvent?.id))?.color || '#2a3a52'}` : '1.5px solid #2a3a52',
+                    border: selectedEvent ? '2px solid #c89664' : '1.5px solid #2a3a52',
                     borderRadius: '12px',
                     color: selectedEvent ? '#fff' : '#888',
                     fontSize: '15px',
@@ -356,12 +456,10 @@ export default function AddBooking() {
                   <span>
                     {selectedEvent ? (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '20px' }}>
-                          {eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.group.split(' ')[0]}
-                        </span>
+                        <Ticket size={18} color="#c89664" />
                         <span style={{ fontWeight: '600' }}>{selectedEvent.name}</span>
                         <span style={{ 
-                          color: eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.color,
+                          color: '#c89664',
                           fontWeight: '700'
                         }}>
                           €{selectedEvent.basePrice}
@@ -483,15 +581,14 @@ export default function AddBooking() {
                 <div style={{
                   marginTop: '16px',
                   padding: '18px',
-                  background: `linear-gradient(135deg, ${eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.bgColor} 0%, rgba(0,0,0,0.3) 100%)`,
-                  border: `2px solid ${eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.color}`,
+                  background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
+                  border: '1px solid rgba(200, 150, 100, 0.3)',
                   borderRadius: '12px',
-                  boxShadow: `0 4px 20px ${eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.color}30`,
                 }}>
                   <p style={{ 
                     fontSize: '12px', 
                     fontWeight: '700', 
-                    color: eventsGroups.find(g => g.events.some(e => e.id === selectedEvent.id))?.color,
+                    color: '#c89664',
                     marginBottom: '10px',
                     textTransform: 'uppercase',
                     letterSpacing: '1.5px',
@@ -510,20 +607,26 @@ export default function AddBooking() {
               )}
 
               {/* Data */}
-              <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+              <div className="filter-group" style={{ marginTop: '20px', position: 'relative' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(1) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Data *
+                  {isStepCompleted(0) && !isStepCompleted(1) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <input 
                   type="date" 
+                  disabled={!isStepCompleted(0)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(0) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(0) && !isStepCompleted(1) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(0) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(0) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(0) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(0) && !isStepCompleted(1) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(0) && !isStepCompleted(1) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={selectedDate}
                   onChange={(e) => handleDateChange(e.target.value)}
@@ -533,19 +636,25 @@ export default function AddBooking() {
 
               {/* Orario - Selezione */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(2) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Orario *
+                  {isStepCompleted(1) && !isStepCompleted(2) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
-                {selectedEvent ? (
+                {selectedEvent && isStepCompleted(1) ? (
                   <select
+                    disabled={!isStepCompleted(1)}
                     style={{ 
                       width: '100%', 
                       padding: '14px', 
-                      backgroundColor: '#1a1a1e', 
-                      border: '1.5px solid #2a3a52',
+                      backgroundColor: isStepCompleted(1) ? '#1a1a1e' : '#0f0f12', 
+                      border: isStepCompleted(1) && !isStepCompleted(2) ? '2px solid #c89664' : '1.5px solid #2a3a52',
                       borderRadius: '10px', 
-                      color: '#fff',
+                      color: isStepCompleted(1) ? '#fff' : '#555',
                       fontSize: '15px',
+                      cursor: isStepCompleted(1) ? 'pointer' : 'not-allowed',
+                      opacity: isStepCompleted(1) ? 1 : 0.5,
+                      boxShadow: isStepCompleted(1) && !isStepCompleted(2) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                      animation: isStepCompleted(1) && !isStepCompleted(2) ? 'pulse 2s infinite' : 'none',
                     }}
                     value={selectedTime}
                     onChange={(e) => handleTimeChange(e.target.value)}
@@ -570,6 +679,129 @@ export default function AddBooking() {
                     fontStyle: 'italic',
                   }}>
                     ⏳ Seleziona prima un evento per vedere gli orari disponibili
+                  </div>
+                )}
+              </div>
+
+              {/* Numero Persone */}
+              <div className="filter-group" style={{ marginTop: '20px' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(3) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Users size={16} color={isStepCompleted(3) ? '#888' : '#555'} />
+                  Numero Persone *
+                  {isStepCompleted(2) && !isStepCompleted(3) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
+                </label>
+                
+                {/* Trigger per aprire/chiudere la griglia */}
+                <div
+                  onClick={() => isStepCompleted(2) && setIsPeopleDropdownOpen(!isPeopleDropdownOpen)}
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    backgroundColor: numberOfPeople > 0 ? '#0f1419' : '#1a1a1e',
+                    border: isStepCompleted(2) && !isStepCompleted(3) ? '2px solid #c89664' : numberOfPeople > 0 ? '2px solid #c89664' : '1.5px solid #2a3a52',
+                    borderRadius: '12px',
+                    color: numberOfPeople > 0 ? '#fff' : '#888',
+                    fontSize: '15px',
+                    cursor: isStepCompleted(2) ? 'pointer' : 'not-allowed',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    transition: 'all 0.3s ease',
+                    opacity: isStepCompleted(2) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(2) && !isStepCompleted(3) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(2) && !isStepCompleted(3) ? 'pulse 2s infinite' : 'none',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Users size={18} color={numberOfPeople > 0 ? '#c89664' : '#888'} />
+                    {numberOfPeople > 0 ? (
+                      <span style={{ fontWeight: '600' }}>
+                        {numberOfPeople} {numberOfPeople === 1 ? 'Persona' : 'Persone'}
+                      </span>
+                    ) : (
+                      '-- Seleziona Numero Persone --'
+                    )}
+                  </span>
+                  <span style={{ transform: isPeopleDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}>
+                    ▼
+                  </span>
+                </div>
+
+                {/* Griglia numeri a scomparsa */}
+                {isPeopleDropdownOpen && (
+                  <div style={{
+                    marginTop: '12px',
+                    padding: '16px',
+                    background: 'rgba(26, 26, 30, 0.8)',
+                    border: '1.5px solid #2a3a52',
+                    borderRadius: '12px',
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                  }}>
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))',
+                      gap: '8px',
+                    }}>
+                      {[...Array(50)].map((_, i) => {
+                        const number = i + 1;
+                        const isSelected = numberOfPeople === number;
+                        return (
+                          <button
+                            key={number}
+                            type="button"
+                            onClick={() => {
+                              setNumberOfPeople(number);
+                              setIsPeopleDropdownOpen(false);
+                            }}
+                            style={{
+                              padding: '12px 8px',
+                              background: isSelected ? 'linear-gradient(135deg, rgba(200, 150, 100, 0.2), rgba(200, 150, 100, 0.1))' : 'rgba(15, 15, 18, 0.8)',
+                              border: isSelected ? '2px solid #c89664' : '1.5px solid #2a3a52',
+                              borderRadius: '8px',
+                              color: isSelected ? '#c89664' : '#fff',
+                              fontSize: '14px',
+                              fontWeight: isSelected ? '700' : '500',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: isSelected ? '0 0 12px rgba(200, 150, 100, 0.3)' : 'none',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderColor = '#c89664';
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderColor = '#2a3a52';
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }
+                            }}
+                          >
+                            {number}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {selectedEvent && numberOfPeople > 0 && (
+                  <div style={{
+                    marginTop: '16px',
+                    padding: '12px',
+                    background: 'rgba(200, 150, 100, 0.1)',
+                    border: '1px solid rgba(200, 150, 100, 0.3)',
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    color: '#c89664',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <Info size={16} color="#c89664" />
+                    <span><strong>Prezzo per persona:</strong> €{selectedEvent.basePrice} × {numberOfPeople} = <strong>€{(selectedEvent.basePrice * numberOfPeople).toFixed(2)}</strong></span>
                   </div>
                 )}
               </div>
@@ -623,18 +855,24 @@ export default function AddBooking() {
 
               {/* Metodo Pagamento */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(4) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Metodo di Pagamento *
+                  {isStepCompleted(3) && !isStepCompleted(4) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <select 
+                  disabled={!isStepCompleted(3)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(3) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(3) && !isStepCompleted(4) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(3) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(3) ? 'pointer' : 'not-allowed',
+                    opacity: isStepCompleted(3) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(3) && !isStepCompleted(4) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(3) && !isStepCompleted(4) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.paymentMethod}
                   onChange={(e) => {
@@ -645,10 +883,10 @@ export default function AddBooking() {
                   required
                 >
                   <option value="">-- Seleziona Metodo --</option>
-                  <option value="cash">💵 Contanti</option>
-                  <option value="card">💳 Carta</option>
-                  <option value="pos">📱 POS</option>
-                  <option value="transfer">🏦 Bonifico</option>
+                  <option value="cash">Contanti</option>
+                  <option value="card">Carta</option>
+                  <option value="pos">POS</option>
+                  <option value="transfer">Bonifico</option>
                 </select>
               </div>
             </div>
@@ -656,40 +894,25 @@ export default function AddBooking() {
             {/* ========== COLONNA 2: PREZZI E PAGAMENTI ========== */}
             <div className="card" style={{ 
               background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
-              border: '2px solid rgba(16, 185, 129, 0.5)',
-              borderRadius: '16px',
+              border: '1px solid rgba(200, 150, 100, 0.3)',
+              borderRadius: '12px',
               padding: '24px',
-              boxShadow: '0 0 20px rgba(16, 185, 129, 0.15)',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#10b981' }}>
-                💰 Dettagli Pagamento
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <CreditCard size={20} color="#c89664" />
+                Dettagli Pagamento
               </h3>
 
-              {/* Prezzo Base */}
-              <div className="filter-group">
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
-                  Prezzo Base €
-                </label>
-                <input 
-                  type="number" 
-                  step="0.01"
-                  disabled
-                  style={{ 
-                    width: '100%', 
-                    padding: '14px', 
-                    backgroundColor: '#0f1419', 
-                    border: '1.5px solid #2a3a52', 
-                    borderRadius: '10px', 
-                    color: '#10b981',
-                    fontSize: '18px',
-                    fontWeight: '700',
-                  }}
-                  value={formData.price}
-                />
-              </div>
-
               {/* Totale */}
-              <div className="filter-group" style={{ marginTop: '20px' }}>
+              <div className="filter-group">
                 <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
                   Totale €
                 </label>
@@ -713,24 +936,32 @@ export default function AddBooking() {
 
               {/* Acconto */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
-                  Acconto Pagato €
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(4) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  Acconto Pagato € *
+                  {isStepCompleted(4) && !isStepCompleted(5) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <input 
                   type="number" 
                   step="0.01"
+                  min="0.01"
+                  disabled={!isStepCompleted(4)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(4) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(4) && !isStepCompleted(5) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(4) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(4) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(4) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(4) && !isStepCompleted(5) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(4) && !isStepCompleted(5) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.deposit}
                   onChange={(e) => handleDepositChange(e.target.value)}
                   placeholder="0.00"
+                  required
                 />
               </div>
 
@@ -760,13 +991,32 @@ export default function AddBooking() {
               {/* Info Box */}
               <div style={{
                 marginTop: '20px',
-                padding: '16px',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '10px',
+                padding: '18px',
+                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
+                border: '1px solid rgba(200, 150, 100, 0.3)',
+                borderRadius: '12px',
               }}>
-                <p style={{ fontSize: '12px', color: '#10b981', lineHeight: '1.6', margin: 0 }}>
-                  ℹ️ Il prezzo è determinato dall'evento selezionato<br/>
+                <p style={{ 
+                  fontSize: '12px', 
+                  fontWeight: '700', 
+                  color: '#c89664',
+                  marginBottom: '10px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}>
+                  <Info size={16} color="#c89664" />
+                  Informazioni Prezzo
+                </p>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: '#ddd', 
+                  lineHeight: '1.7', 
+                  margin: 0,
+                }}>
+                  Il prezzo è determinato dall'evento selezionato<br/>
                   • Metodo pagamento Carta/POS/Bonifico: +5% di tassa
                 </p>
               </div>
@@ -775,30 +1025,44 @@ export default function AddBooking() {
             {/* ========== COLONNA 3: DATI CLIENTE ========== */}
             <div className="card" style={{ 
               background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
-              border: '2px solid rgba(78, 205, 196, 0.5)',
-              borderRadius: '16px',
+              border: '1px solid rgba(200, 150, 100, 0.3)',
+              borderRadius: '12px',
               padding: '24px',
-              boxShadow: '0 0 20px rgba(78, 205, 196, 0.15)',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#4ecdc4' }}>
-                👤 Dati Cliente
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <User size={20} color="#c89664" />
+                Dati Cliente
               </h3>
 
               {/* Nome */}
               <div className="filter-group">
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(5) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Nome *
+                  {isStepCompleted(4) && !isStepCompleted(5) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <input 
                   type="text" 
+                  disabled={!isStepCompleted(5)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(5) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(5) && !isStepCompleted(6) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(5) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(5) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(5) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(5) && !isStepCompleted(6) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(5) && !isStepCompleted(6) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: capitalizeFirstLetter(e.target.value) })}
@@ -809,19 +1073,25 @@ export default function AddBooking() {
 
               {/* Cognome */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(6) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Cognome *
+                  {isStepCompleted(6) && !isStepCompleted(7) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <input 
                   type="text" 
+                  disabled={!isStepCompleted(6)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(6) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(6) && !isStepCompleted(7) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(6) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(6) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(6) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(6) && !isStepCompleted(7) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(6) && !isStepCompleted(7) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: capitalizeFirstLetter(e.target.value) })}
@@ -832,19 +1102,25 @@ export default function AddBooking() {
 
               {/* Email */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(7) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Email *
+                  {isStepCompleted(7) && !isStepCompleted(8) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
                 <input 
                   type="email" 
+                  disabled={!isStepCompleted(7)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(7) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(7) && !isStepCompleted(8) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(7) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(7) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(7) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(7) && !isStepCompleted(8) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(7) && !isStepCompleted(8) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value.toLowerCase() })}
@@ -853,56 +1129,77 @@ export default function AddBooking() {
                 />
               </div>
 
-              {/* Telefono */}
+              {/* Paese */}
               <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
-                  Telefono *
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(8) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  Paese *
+                  {isStepCompleted(8) && !isStepCompleted(9) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
                 </label>
-                <input 
-                  type="tel" 
+                <select 
+                  disabled={!isStepCompleted(8)}
                   style={{ 
                     width: '100%', 
                     padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
+                    backgroundColor: isStepCompleted(8) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(8) && !isStepCompleted(9) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
-                    color: '#fff',
+                    color: isStepCompleted(8) ? '#fff' : '#555',
                     fontSize: '15px',
+                    cursor: isStepCompleted(8) ? 'pointer' : 'not-allowed',
+                    opacity: isStepCompleted(8) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(8) && !isStepCompleted(9) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(8) && !isStepCompleted(9) ? 'pulse 2s infinite' : 'none',
+                  }}
+                  value={formData.country}
+                  onChange={(e) => {
+                    const selectedCountry = e.target.value;
+                    const prefix = getCountryPrefix(selectedCountry);
+                    setFormData({ 
+                      ...formData, 
+                      country: selectedCountry,
+                      phone: prefix + ' ' // Imposta il prefisso automaticamente
+                    });
+                  }}
+                  required
+                >
+                  <option value="">-- Seleziona Paese --</option>
+                  <option value="Italy">Italia</option>
+                  <option value="Spain">Spagna</option>
+                  <option value="France">Francia</option>
+                  <option value="UK">Regno Unito</option>
+                  <option value="Germany">Germania</option>
+                  <option value="USA">Stati Uniti</option>
+                  <option value="Other">Altro</option>
+                </select>
+              </div>
+
+              {/* Telefono */}
+              <div className="filter-group" style={{ marginTop: '20px' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', color: isStepCompleted(9) ? '#888' : '#555', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  Telefono *
+                  {isStepCompleted(9) && !isStepCompleted(10) && <span style={{fontSize: '11px', color: '#c89664', fontWeight: '700'}}>→ Compila ora</span>}
+                </label>
+                <input 
+                  type="tel" 
+                  disabled={!isStepCompleted(9)}
+                  style={{ 
+                    width: '100%', 
+                    padding: '14px', 
+                    backgroundColor: isStepCompleted(9) ? '#1a1a1e' : '#0f0f12', 
+                    border: isStepCompleted(9) && !isStepCompleted(10) ? '2px solid #c89664' : '1.5px solid #2a3a52', 
+                    borderRadius: '10px', 
+                    color: isStepCompleted(9) ? '#fff' : '#555',
+                    fontSize: '15px',
+                    cursor: isStepCompleted(9) ? 'text' : 'not-allowed',
+                    opacity: isStepCompleted(9) ? 1 : 0.5,
+                    boxShadow: isStepCompleted(9) && !isStepCompleted(10) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                    animation: isStepCompleted(9) && !isStepCompleted(10) ? 'pulse 2s infinite' : 'none',
                   }}
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
-                  placeholder="+39 123 456 7890"
+                  placeholder={formData.country ? `${getCountryPrefix(formData.country)} 123 456 7890` : "+39 123 456 7890"}
                 />
-              </div>
-
-              {/* Paese */}
-              <div className="filter-group" style={{ marginTop: '20px' }}>
-                <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px', display: 'block' }}>
-                  Paese
-                </label>
-                <select 
-                  style={{ 
-                    width: '100%', 
-                    padding: '14px', 
-                    backgroundColor: '#1a1a1e', 
-                    border: '1.5px solid #2a3a52', 
-                    borderRadius: '10px', 
-                    color: '#fff',
-                    fontSize: '15px',
-                  }}
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                >
-                  <option value="">-- Seleziona Paese --</option>
-                  <option value="Italy">🇮🇹 Italia</option>
-                  <option value="Spain">🇪🇸 Spagna</option>
-                  <option value="France">🇫🇷 Francia</option>
-                  <option value="UK">🇬🇧 Regno Unito</option>
-                  <option value="Germany">🇩🇪 Germania</option>
-                  <option value="USA">🇺🇸 Stati Uniti</option>
-                  <option value="Other">🌍 Altro</option>
-                </select>
               </div>
 
               {/* Note Cliente */}
@@ -919,7 +1216,7 @@ export default function AddBooking() {
                     border: '1.5px solid #2a3a52', 
                     borderRadius: '10px', 
                     color: '#fff',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     resize: 'vertical',
                   }}
                   placeholder="Scrivi qui le note del cliente, ad esempio: Cliente vegano..."
@@ -942,7 +1239,7 @@ export default function AddBooking() {
                     border: '1.5px solid #c89664', 
                     borderRadius: '10px', 
                     color: '#fff',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     resize: 'vertical',
                   }}
                   placeholder="Scrivi qui note per l'amministratore..."
@@ -953,53 +1250,123 @@ export default function AddBooking() {
             </div>
           </div>
 
-          {/* ========== SEZIONE AGGIUNTIVA: GUEST LIST E LINGUA ========== */}
+          {/* ========== SEZIONE AGGIUNTIVA: ZONA VENDITA, GUEST LIST E LINGUA ========== */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginTop: '24px' }}>
-            
-            {/* Guest List */}
-            <div className="card" style={{ 
-              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
-              border: '2px solid rgba(147, 51, 234, 0.2)',
-              borderRadius: '16px',
-              padding: '24px',
-            }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#9333ea' }}>
-                🎫 Accesso Liste Eventi
+
+            {/* Zona Vendita */}
+            <div
+              className="card"
+              style={{
+                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
+                border: '1px solid rgba(200, 150, 100, 0.3)',
+                borderRadius: '12px',
+                padding: '24px',
+              }}
+            >
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '24px',
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Globe size={20} color="#c89664" />
+                Zona Vendita
               </h3>
-              <select 
-                style={{ 
-                  width: '100%', 
-                  padding: '14px', 
-                  backgroundColor: '#1a1a1e', 
-                  border: '1.5px solid #2a3a52', 
-                  borderRadius: '10px', 
+              <select
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  backgroundColor: '#1a1a1e',
+                  border: '1.5px solid #2a3a52',
+                  borderRadius: '10px',
                   color: '#fff',
                   fontSize: '15px',
+                  boxShadow: 'none',
+                  animation: 'none',
+                }}
+                value={formData.salesZone}
+                onChange={(e) => setFormData({ ...formData, salesZone: e.target.value })}
+                required
+              >
+                <option value="">-- Seleziona Zona Vendita --</option>
+                <option value="Online">Online</option>
+                <option value="Ibiza Centro">Ibiza Centro</option>
+                <option value="Hotel">Hotel</option>
+                <option value="Social">Social</option>
+                <option value="Aeroporto">Aeroporto</option>
+                <option value="Spiaggia">Spiaggia</option>
+                <option value="Altro">Altro</option>
+              </select>
+            </div>
+
+            {/* Guest List */}
+            <div className="card" style={{
+              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
+              border: '1px solid rgba(200, 150, 100, 0.3)',
+              borderRadius: '12px',
+              padding: '24px',
+            }}>
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '24px',
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Ticket size={20} color="#c89664" />
+                Accesso Liste Eventi
+              </h3>
+              <select
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  backgroundColor: '#1a1a1e',
+                  border: isStepCompleted(10) ? '2px solid #c89664' : '1.5px solid #2a3a52',
+                  borderRadius: '10px',
+                  color: '#fff',
+                  fontSize: '15px',
+                  boxShadow: isStepCompleted(10) ? '0 0 20px rgba(200, 150, 100, 0.4)' : 'none',
+                  animation: isStepCompleted(10) ? 'pulse 2s infinite' : 'none',
                 }}
                 value={formData.guestListAccess}
                 onChange={(e) => setFormData({ ...formData, guestListAccess: e.target.value })}
               >
                 <option value="">-- Seleziona Accesso --</option>
-                <option value="vip">⭐ VIP List</option>
-                <option value="standard">🎉 Standard List</option>
-                <option value="guest">👥 Guest +1</option>
-                <option value="none">❌ Nessun Accesso</option>
+                <option value="vip">VIP List</option>
+                <option value="standard">Standard List</option>
+                <option value="guest">Guest +1</option>
+                <option value="none">Nessun Accesso</option>
               </select>
             </div>
 
             {/* Lingua Email */}
             <div className="card" style={{ 
               background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95) 0%, rgba(15, 15, 18, 0.95) 100%)',
-              border: '2px solid rgba(78, 205, 196, 0.2)',
-              borderRadius: '16px',
+              border: '1px solid rgba(200, 150, 100, 0.3)',
+              borderRadius: '12px',
               padding: '24px',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#4ecdc4' }}>
-                🌍 Seleziona Lingua per Inviare Email / SMS
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Globe size={20} color="#c89664" />
+                Seleziona Lingua per Inviare Email / SMS
               </h3>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 {Object.entries(languageToggles).map(([lang, active]) => {
                   const flagEmojis = { it: '🇮🇹', en: '🇬🇧', es: '🇪🇸', fr: '🇫🇷' };
+                  const langNames = { it: 'Italiano', en: 'English', es: 'Español', fr: 'Français' };
                   return (
                     <button
                       key={lang}
@@ -1009,18 +1376,23 @@ export default function AddBooking() {
                         setFormData({ ...formData, emailLanguage: lang });
                       }}
                       style={{
-                        padding: '14px 28px',
-                        borderRadius: '12px',
-                        border: active ? '2px solid #4ecdc4' : '1.5px solid #2a3a52',
-                        backgroundColor: active ? '#4ecdc4' : '#1a1a1e',
-                        color: active ? '#0f1419' : '#fff',
+                        padding: '12px 16px',
+                        borderRadius: '10px',
+                        border: active ? '2px solid #c89664' : '1.5px solid #2a3a52',
+                        background: active ? 'linear-gradient(135deg, rgba(200, 150, 100, 0.15) 0%, rgba(200, 150, 100, 0.05) 100%)' : 'rgba(26, 26, 30, 0.8)',
+                        color: '#fff',
                         cursor: 'pointer',
-                        fontWeight: active ? '700' : '500',
-                        fontSize: '28px',
+                        fontWeight: active ? '600' : '500',
+                        fontSize: '15px',
                         transition: 'all 0.3s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
                       }}
                     >
-                      {flagEmojis[lang]}
+                      <span style={{ fontSize: '20px' }}>{flagEmojis[lang]}</span>
+                      <span>{langNames[lang]}</span>
                     </button>
                   );
                 })}
@@ -1034,8 +1406,17 @@ export default function AddBooking() {
               borderRadius: '16px',
               padding: '24px',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#c89664' }}>
-                👨‍💼 Creato Da
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <User size={20} color="#c89664" />
+                Creato Da
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div>

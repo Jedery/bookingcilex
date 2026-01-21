@@ -2,12 +2,17 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "bookings": "Prenotazioni",
     "addBooking": "Aggiungi Prenotazione",
     "listBookings": "Lista Prenotazioni",
     "myProfile": "Il Mio Profilo",
     "manageProfiles": "Gestisci Profili",
     "profile": "Mio Profilo",
+    "wallet": "Wallet",
+    "myWallet": "Il Mio Wallet",
+    "teamWallet": "Wallet Team",
+    "housingManagement": "Gestione Affitti",
     "bookingConfig": "Configurazione Prenotazioni",
     "logout": "Esci"
   },
@@ -19,17 +24,44 @@
     "title": "Panoramica Dashboard",
     "teamAnalysis": "Analisi Team",
     "today": "Oggi",
-    "thisWeek": "Questa Settimana",
-    "thisMonth": "Questo Mese"
+    "thisWeek": "Settimana",
+    "thisMonth": "Mese"
+  },
+  "revenueChart": {
+    "title": "Grafico Entrate",
+    "thisYear": "Quest'Anno",
+    "lastYear": "Anno Scorso",
+    "day": "Giorno",
+    "week": "Settimana",
+    "month": "Mese",
+    "year": "Anno"
+  },
+  "analytics": {
+    "title": "Dashboard Analytics",
+    "subtitle": "Analisi dettagliata performance: location, orari e trend stagionali",
+    "locationPerformance": "Performance per Location",
+    "timeAnalysis": "Analisi Oraria Vendite",
+    "seasonalTrends": "Trend Stagionale",
+    "sales": "vendite",
+    "insight": "Insight",
+    "timeSlotInsight": "La fascia oraria 16:00-18:00 è la più performante con <strong>115 vendite</strong>. Considera di allocare più venditori in questo orario per massimizzare i risultati.",
+    "seasonalAnalysis": "Analisi Stagionale",
+    "seasonInsight": "<strong>Agosto</strong> è il mese di punta con <strong>1,580 vendite</strong> (51/giorno). Pianifica il team di conseguenza: rinforza le location top nelle fasce orarie 14:00-20:00.",
+    "showAll": "Mostra tutti",
+    "showLess": "Mostra meno",
+    "perDay": "/giorno"
   },
   "kpi": {
     "totalBookings": "Totale Bookings",
     "confirmed": "Confermati",
     "pending": "In Sospeso",
-    "cancelled": "Cancellati"
+    "cancelled": "Cancellati",
+    "today": "Oggi",
+    "week": "Settimana",
+    "month": "Mese"
   },
   "teamPerformance": {
-    "title": "Performance Team"
+    "title": "Classifica Team"
   },
   "sellerAnalytics": {
     "title": "Analisi Venditori Individuale",
@@ -108,7 +140,21 @@
     "saveBooking": "Salva Prenotazione"
   },
   "listBooking": {
-    "title": "Lista Prenotazioni",
+    "title": "Gestione Prenotazioni",
+    "subtitle": "Lista completa di tutte le prenotazioni",
+    "activeFilter": "Filtro attivo",
+    "removeFilter": "Rimuovi filtro",
+    "showFilters": "Mostra Filtri",
+    "hideFilters": "Nascondi Filtri",
+    "searchBookingId": "ID PRENOTAZIONE",
+    "searchEventName": "NOME EVENTO",
+    "searchClientName": "NOME CLIENTE",
+    "searchEmail": "EMAIL",
+    "bookingIdPlaceholder": "BK-1768...",
+    "eventNamePlaceholder": "Nome evento...",
+    "clientNamePlaceholder": "Nome cliente...",
+    "emailPlaceholder": "email@example.com",
+    "actions": "Azioni",
     "addNew": "Aggiungi Nuova Prenotazione",
     "noBookings": "Nessuna prenotazione ancora",
     "createFirst": "Crea la tua prima prenotazione",
@@ -121,6 +167,9 @@
     "total": "Totale €",
     "toPay": "Da Pagare €",
     "date": "Data",
-    "noEvent": "Nessun evento"
+    "noEvent": "Nessun evento",
+    "createdBy": "Creato da",
+    "clientInfo": "Informazioni Cliente",
+    "filters": "Filtri"
   }
 }

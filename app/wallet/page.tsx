@@ -203,13 +203,13 @@ export default function WalletPage() {
       case 'scooter':
         return '🛵';
       case 'fine':
-        return '⚠️';
+        return <ArrowDownRight size={18} color="#f39c12" />;
       case 'damage':
-        return '🔧';
+        return <ArrowDownRight size={18} color="#e74c3c" />;
       case 'bonus':
-        return '🎁';
+        return <ArrowUpRight size={18} color="#2ecc71" />;
       default:
-        return '💰';
+        return <Wallet size={18} color="#c89664" />;
     }
   };
 
@@ -232,7 +232,7 @@ export default function WalletPage() {
         <Sidebar t={t} />
         <div className="main-content">
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '20px' }}>💰</div>
+            <div style={{ marginBottom: '20px' }}><Wallet size={48} color="#c89664" /></div>
             <p style={{ color: '#888' }}>Caricamento wallet...</p>
           </div>
         </div>
@@ -281,7 +281,7 @@ export default function WalletPage() {
       <Sidebar t={t} />
       <div className="main-content">
       {/* Header */}
-      <div style={{ marginBottom: '35px' }}>
+      <div style={{ marginBottom: '35px', marginLeft: '40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '10px' }}>
           <Wallet size={32} color="#c89664" strokeWidth={1.5} />
           <h1 style={{ margin: 0, fontSize: '32px', fontWeight: '200', letterSpacing: '2px' }}>

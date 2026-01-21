@@ -19,7 +19,7 @@ const translations = { en, it, fr, es };
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>('it');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -45,10 +45,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     
     return value || key;
   };
-
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>

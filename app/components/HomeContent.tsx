@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import KPICards from './KPICards';
 import RevenueChart from './RevenueChart';
-import RecentTransactions from './RecentTransactions';
+import BookingStatsWidget from './BookingStatsWidget';
 import TeamPerformance from './TeamPerformance';
 import SellerAnalytics from './SellerAnalytics';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '../i18n/useTranslation';
 import { useAuth } from '../context/AuthContext';
-import { Search, BarChart3, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { Search, BarChart3, CheckCircle2, Clock, XCircle, Banknote, CreditCard, RefreshCw, Target } from 'lucide-react';
 
 export default function HomeContent() {
   const { t, language, setLanguage } = useTranslation();
@@ -27,74 +27,123 @@ export default function HomeContent() {
     cancelledBookings: 0,
     totalRevenue: 0,
   });
-
-  const [recentTransactions, setRecentTransactions] = useState([]);
+  const [todayStats, setTodayStats] = useState({
+    total: 0,
+    confirmed: 0,
+    pending: 0,
+    revenue: 0,
+  });
   const [teamSalesData, setTeamSalesData] = useState([]);
+  const [kpiPeriod, setKpiPeriod] = useState<'today' | 'week' | 'month'>('month');
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('month');
   const [selectedSeller, setSelectedSeller] = useState<any>(null);
 
   // Load real users data for team performance
   useEffect(() => {
-    fetch('/api/users')
-      .then((res) => res.json())
-      .then((users) => {
-        // Filter out SuperAdmin and map users to team sales data
-        const teamData = users
-          .filter((u: any) => u.role !== 'SuperAdmin' && u.isActive)
-          .map((u: any) => ({
+    Promise.all([
+      fetch('/api/users').then(res => res.json()),
+      fetch('/api/bookings').then(res => res.json())
+    ])
+      .then(([users, bookings]) => {
+        // Filter out SuperAdmin
+        const activeUsers = users.filter((u: any) => u.role !== 'SuperAdmin' && u.isActive);
+        
+        // Calculate real sales data for each user
+        const teamData = activeUsers.map((u: any) => {
+          // Get all bookings sold by this user
+          const userBookings = bookings.filter((b: any) => b.soldBy === u.id);
+          
+          const totalSales = userBookings.length;
+          const confirmedSales = userBookings.filter((b: any) => 
+            b.status === 'Confirmed' || b.status.toLowerCase() === 'confermato'
+          ).length;
+          const pendingSales = userBookings.filter((b: any) => 
+            b.status === 'Pending' || b.status.toLowerCase().includes('sospeso')
+          ).length;
+          
+          // Count payment methods
+          const cashSales = userBookings.filter((b: any) => b.paymentMethod === 'Cash').length;
+          const cardSales = userBookings.filter((b: any) => b.paymentMethod === 'Card').length;
+          
+          // Calculate revenue from confirmed bookings
+          const revenue = userBookings
+            .filter((b: any) => b.status === 'Confirmed' || b.status.toLowerCase() === 'confermato')
+            .reduce((sum: number, b: any) => sum + (b.total || 0), 0);
+          
+          return {
             name: u.name,
             role: u.role,
-            totalSales: Math.floor(u.walletBalance / 250), // Estimate sales from balance
-            confirmedSales: Math.floor(u.walletBalance / 280),
-            pendingSales: Math.floor(Math.random() * 5),
-            cashSales: Math.floor(u.walletBalance / 500),
-            cardSales: Math.floor(u.walletBalance / 450),
-            revenue: u.walletBalance,
-            avgConfirmTime: `${(Math.random() * 3 + 0.5).toFixed(1)}h`,
-          }));
+            totalSales,
+            confirmedSales,
+            pendingSales,
+            cashSales,
+            cardSales,
+            revenue,
+            avgConfirmTime: `${(Math.random() * 3 + 0.5).toFixed(1)}h`, // Mock for now
+          };
+        });
+        
         setTeamSalesData(teamData);
       })
-      .catch((error) => console.error('Error fetching users:', error));
+      .catch((error) => console.error('Error fetching team data:', error));
   }, []);
 
   useEffect(() => {
     // Fetch dashboard stats
     fetch('/api/bookings')
       .then((res) => res.json())
-      .then((data) => {
-        const confirmed = data.filter((b: any) => b.status === 'Confirmed').length;
-        const pending = data.filter((b: any) => b.status === 'Pending').length;
-        const cancelled = data.filter((b: any) => b.status === 'Cancelled').length;
-        const revenue = data
+      .then((allData) => {
+        const now = new Date();
+        
+        // Calculate TODAY stats
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const todayBookings = allData.filter((b: any) => new Date(b.createdAt) >= todayStart);
+        const todayConfirmed = todayBookings.filter((b: any) => 
+          b.status === 'Confirmed' || b.status.toLowerCase() === 'confermato'
+        );
+        const todayPending = todayBookings.filter((b: any) => 
+          b.status === 'Pending' || b.status.toLowerCase().includes('sospeso')
+        );
+        const todayRevenue = todayConfirmed.reduce((sum: number, b: any) => sum + (b.total || 0), 0);
+        
+        setTodayStats({
+          total: todayBookings.length,
+          confirmed: todayConfirmed.length,
+          pending: todayPending.length,
+          revenue: todayRevenue,
+        });
+        
+        // Filter by period for main KPIs
+        let filteredData = allData;
+        
+        if (kpiPeriod === 'today') {
+          filteredData = todayBookings;
+        } else if (kpiPeriod === 'week') {
+          const weekStart = new Date(now);
+          weekStart.setDate(now.getDate() - 7);
+          filteredData = allData.filter((b: any) => new Date(b.createdAt) >= weekStart);
+        } else if (kpiPeriod === 'month') {
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          filteredData = allData.filter((b: any) => new Date(b.createdAt) >= monthStart);
+        }
+
+        const confirmed = filteredData.filter((b: any) => b.status === 'Confirmed').length;
+        const pending = filteredData.filter((b: any) => b.status === 'Pending').length;
+        const cancelled = filteredData.filter((b: any) => b.status === 'Cancelled').length;
+        const revenue = filteredData
           .filter((b: any) => b.status === 'Confirmed')
           .reduce((sum: number, b: any) => sum + (b.total || 0), 0);
 
         setDashboardData({
-          totalBookings: data.length,
+          totalBookings: filteredData.length,
           confirmedBookings: confirmed,
           pendingBookings: pending,
           cancelledBookings: cancelled,
           totalRevenue: revenue,
         });
-
-        // Map recent transactions
-        const transactions = data.slice(0, 8).map((b: any) => ({
-          id: b.bookingId,
-          name: `${b.name} - ${b.event?.name || 'N/A'}`,
-          status: b.status,
-          date: new Date(b.createdAt).toLocaleDateString('it-IT', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
-          }),
-          amount: b.total || 0,
-          paymentMethod: b.paymentMethod || 'N/A',
-          soldBy: b.soldByName || 'N/A',
-        }));
-        setRecentTransactions(transactions);
       })
       .catch((error) => console.error('Error fetching dashboard data:', error));
-  }, []);
+  }, [kpiPeriod]);
 
   // Mock data per Seller Analytics - da sostituire con dati reali
   const sellerAnalyticsData = [
@@ -183,160 +232,93 @@ export default function HomeContent() {
     <div className="dashboard-container">
       <Sidebar t={t} />
       <div className="main-content">
-        <div className="header" style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
+        {/* Welcome Hero Section */}
+        <div style={{ 
+          background: 'linear-gradient(135deg, rgba(200, 150, 100, 0.08) 0%, rgba(10, 10, 10, 0.4) 100%)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(200, 150, 100, 0.3)',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          marginBottom: '24px',
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
           alignItems: 'center',
-          marginBottom: '20px',
-          paddingTop: '0',
+          justifyContent: 'space-between',
+          gap: '16px',
         }}>
-          {/* Desktop: Search + Language + User */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '20px',
-            width: '100%',
-            flex: 1,
-          }}>
-            {/* Search Bar - Solo Desktop */}
-            <div style={{ 
-              flex: 1, 
-              maxWidth: '400px',
-            }}
-              className="search-desktop"
-            >
-              <div style={{ position: 'relative' }}>
-                <Search 
-                  size={18} 
-                  style={{ 
-                    position: 'absolute', 
-                    left: '15px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)', 
-                    color: '#888' 
-                  }} 
-                />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  style={{
-                    width: '100%',
-                    padding: '12px 15px 12px 45px',
-                    background: 'rgba(10, 10, 10, 0.6)',
-                    border: '1px solid rgba(200, 150, 100, 0.3)',
-                    borderRadius: '8px',
-                    color: '#fff',
-                    fontSize: '14px',
-                    fontWeight: '300',
-                    outline: 'none',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(200, 150, 100, 0.6)';
-                    e.target.style.boxShadow = '0 0 20px rgba(200, 150, 100, 0.2)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(200, 150, 100, 0.3)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Mobile: Saluto Personalizzato - Allineato perfettamente */}
-            <div className="mobile-greeting" style={{
-              display: 'none',
-              flex: 1,
-              alignItems: 'center',
-              gap: '10px',
-              padding: '6px 10px',
-              background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.6), rgba(15, 15, 18, 0.8))',
-              border: '1px solid rgba(200, 150, 100, 0.2)',
-              borderRadius: '12px',
-              minHeight: '52px',
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c89664 0%, #d4a574 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#0a0a0a',
-                border: '2px solid rgba(200, 150, 100, 0.4)',
-                flexShrink: 0,
-              }}>
-                {user?.name?.charAt(0).toUpperCase() || 'G'}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ 
-                  fontSize: '9px', 
-                  color: '#999',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.2px',
-                  fontWeight: '600',
-                  marginBottom: '2px',
-                  lineHeight: 1,
-                }}>
-                  Benvenuto
-                </div>
-                <div style={{ 
-                  fontSize: '15px', 
-                  fontWeight: '600',
-                  color: '#fff',
-                  letterSpacing: '0.3px',
-                  lineHeight: 1.2,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}>
-                  {user?.name || 'Guest'}
-                </div>
-              </div>
-            </div>
-
-            {/* Language Switcher - Migliorato */}
-            <div style={{ 
+          {/* Left side: Avatar + Text */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* Avatar */}
+            <div style={{
+              width: '60px',
+              height: '60px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #c89664 0%, #d4a574 100%)',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '24px',
+              fontWeight: '700',
+              color: '#0a0a0a',
+              border: '2px solid rgba(200, 150, 100, 0.4)',
+              flexShrink: 0,
             }}>
-              <LanguageSwitcher language={language} setLanguage={setLanguage} />
+              {user?.name?.charAt(0).toUpperCase() || 'G'}
             </div>
 
-            {/* User Info - Solo Desktop */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-              className="user-info-desktop"
-            >
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '14px', fontWeight: '400', color: '#fff' }}>
-                  {user?.name || 'Guest'}
-                </div>
-                <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
-                  {user?.role || 'User'}
-                </div>
-              </div>
+            {/* Text */}
+            <div>
               <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c89664 0%, #a67c52 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '16px',
-                fontWeight: '500',
+                fontSize: '10px',
+                fontWeight: '600',
+                color: '#888',
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                marginBottom: '4px',
               }}>
-                {user?.name?.charAt(0).toUpperCase() || 'G'}
+                Benvenuto
               </div>
+              <h1 style={{
+                fontSize: '22px',
+                fontWeight: '700',
+                color: '#fff',
+                margin: 0,
+                letterSpacing: '0.3px',
+                lineHeight: 1.2,
+              }}>
+                {user?.name || 'Guest'}
+              </h1>
+            </div>
+          </div>
+
+          {/* Right side: Status Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+            {/* Status Badge */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              background: 'rgba(200, 150, 100, 0.15)',
+              borderRadius: '8px',
+              border: '1px solid rgba(200, 150, 100, 0.3)',
+            }}>
+              <Target size={12} color="#c89664" />
+              <span style={{
+                fontSize: '11px',
+                fontWeight: '600',
+                color: '#c89664',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+              }}>
+                {user?.role || 'User'}
+              </span>
             </div>
           </div>
         </div>
 
-        <KPICards cards={kpiCards} />
+<KPICards cards={kpiCards} />
 
         <TeamPerformance 
           salesData={teamSalesData} 
@@ -505,19 +487,40 @@ export default function HomeContent() {
                 borderRadius: '12px',
                 padding: '24px',
               }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '20px', letterSpacing: '-0.3px' }}>Metodi di Pagamento</h3>
+                <h3 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: '600', 
+                  color: '#c89664', 
+                  marginBottom: '20px', 
+                  letterSpacing: '-0.3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}>
+                  <CreditCard size={20} color="#c89664" />
+                  Metodi di Pagamento
+                </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: '700', color: '#fff', marginBottom: '4px' }}>{selectedSeller.cashSales}</div>
-                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>💵 Contanti</div>
+                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Banknote size={14} color="#c89664" />
+                      Contanti
+                    </div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: '700', color: '#fff', marginBottom: '4px' }}>{selectedSeller.cardSales}</div>
-                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>💳 Carta</div>
+                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <CreditCard size={14} color="#c89664" />
+                      Carta
+                    </div>
                   </div>
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '24px', fontWeight: '700', color: '#fff', marginBottom: '4px' }}>{selectedSeller.totalSales - selectedSeller.cashSales - selectedSeller.cardSales}</div>
-                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>🔄 Altro</div>
+                    <div style={{ fontSize: '13px', color: '#888', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <RefreshCw size={14} color="#c89664" />
+                      Altro
+                    </div>
                   </div>
                 </div>
               </div>
@@ -525,16 +528,102 @@ export default function HomeContent() {
           </div>
         )}
 
-        <RevenueChart data={[
-          { month: 'Gen', amount: 12000 },
-          { month: 'Feb', amount: 18000 },
-          { month: 'Mar', amount: 15000 },
-          { month: 'Apr', amount: 22000 },
-          { month: 'Mag', amount: 28000 },
-          { month: 'Giu', amount: 35000 },
-        ]} />
+        {/* Revenue Chart - Hidden for Promoter */}
+        {user?.role !== 'Promoter' && <RevenueChart t={t} />}
 
-        <RecentTransactions transactions={recentTransactions} />
+        {/* Booking Stats Widget - Hidden for Promoter */}
+        {user?.role !== 'Promoter' && <BookingStatsWidget t={t} />}
+
+        {/* TODAY STATS - Riepilogo Giornaliero */}
+        <div style={{
+          background: 'rgba(20, 20, 20, 0.6)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(200, 150, 100, 0.3)',
+          borderRadius: '12px',
+          padding: '24px',
+          marginTop: '30px',
+        }}>
+          <h3 style={{
+            fontSize: '18px',
+            fontWeight: '600',
+            color: '#fff',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}>
+            <BarChart3 size={22} color="#c89664" />
+            Riepilogo Giornaliero - {now.getDate().toString().padStart(2, '0')}/{(now.getMonth() + 1).toString().padStart(2, '0')}/{now.getFullYear()}
+          </h3>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            gap: '12px',
+          }}>
+            {/* Totale Oggi */}
+            <div style={{
+              background: 'rgba(10, 10, 10, 0.4)',
+              borderRadius: '10px',
+              padding: '16px',
+              border: '1px solid rgba(200, 150, 100, 0.2)',
+            }}>
+              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: '500' }}>
+                Ticket Oggi
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#fff' }}>
+                {todayStats.total}
+              </div>
+            </div>
+
+            {/* Confermati Oggi */}
+            <div style={{
+              background: 'rgba(10, 10, 10, 0.4)',
+              borderRadius: '10px',
+              padding: '16px',
+              border: '1px solid rgba(34, 197, 94, 0.2)',
+            }}>
+              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: '500' }}>
+                Confermati
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#22c55e' }}>
+                {todayStats.confirmed}
+              </div>
+            </div>
+
+            {/* In Sospeso Oggi */}
+            <div style={{
+              background: 'rgba(10, 10, 10, 0.4)',
+              borderRadius: '10px',
+              padding: '16px',
+              border: '1px solid rgba(234, 179, 8, 0.2)',
+            }}>
+              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: '500' }}>
+                In Sospeso
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: '#eab308' }}>
+                {todayStats.pending}
+              </div>
+            </div>
+
+            {/* Revenue Oggi - Hide for Promoter */}
+            {user?.role !== 'Promoter' && (
+              <div style={{
+                background: 'rgba(10, 10, 10, 0.4)',
+                borderRadius: '10px',
+                padding: '16px',
+                border: '1px solid rgba(200, 150, 100, 0.3)',
+              }}>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: '500' }}>
+                  Incasso Oggi
+                </div>
+                <div style={{ fontSize: '28px', fontWeight: '700', color: '#c89664' }}>
+                  €{todayStats.revenue.toFixed(0)}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

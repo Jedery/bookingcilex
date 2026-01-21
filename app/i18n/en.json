@@ -2,12 +2,17 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "bookings": "Bookings",
     "addBooking": "Add Booking",
     "listBookings": "List Bookings",
     "myProfile": "My Profile",
     "manageProfiles": "Manage Profiles",
     "profile": "My Profile",
+    "wallet": "Wallet",
+    "myWallet": "My Wallet",
+    "teamWallet": "Team Wallet",
+    "housingManagement": "Housing Management",
     "bookingConfig": "Booking Configuration",
     "logout": "Logout"
   },
@@ -19,17 +24,44 @@
     "title": "Dashboard Overview",
     "teamAnalysis": "Team Analysis",
     "today": "Today",
-    "thisWeek": "This Week",
-    "thisMonth": "This Month"
+    "thisWeek": "Week",
+    "thisMonth": "Month"
+  },
+  "revenueChart": {
+    "title": "Revenue Chart",
+    "thisYear": "This Year",
+    "lastYear": "Last Year",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year"
+  },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "subtitle": "Detailed performance analysis: locations, times and seasonal trends",
+    "locationPerformance": "Location Performance",
+    "timeAnalysis": "Hourly Sales Analysis",
+    "seasonalTrends": "Seasonal Trends",
+    "sales": "sales",
+    "insight": "Insight",
+    "timeSlotInsight": "The 16:00-18:00 time slot is the most performing with <strong>115 sales</strong>. Consider allocating more sellers during this time to maximize results.",
+    "seasonalAnalysis": "Seasonal Analysis",
+    "seasonInsight": "<strong>August</strong> is the peak month with <strong>1,580 sales</strong> (51/day). Plan your team accordingly: strengthen top locations during 14:00-20:00 time slots.",
+    "showAll": "Show all",
+    "showLess": "Show less",
+    "perDay": "/day"
   },
   "kpi": {
     "totalBookings": "Total Bookings",
     "confirmed": "Confirmed",
     "pending": "Pending",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "today": "Today",
+    "week": "Week",
+    "month": "Month"
   },
   "teamPerformance": {
-    "title": "Team Performance"
+    "title": "Team Leaderboard"
   },
   "sellerAnalytics": {
     "title": "Individual Seller Analytics",
@@ -108,7 +140,21 @@
     "saveBooking": "Save Booking"
   },
   "listBooking": {
-    "title": "Bookings List",
+    "title": "Bookings Management",
+    "subtitle": "Complete list of all reservations",
+    "activeFilter": "Active filter",
+    "removeFilter": "Remove filter",
+    "showFilters": "Show Filters",
+    "hideFilters": "Hide Filters",
+    "searchBookingId": "BOOKING ID",
+    "searchEventName": "EVENT NAME",
+    "searchClientName": "CLIENT NAME",
+    "searchEmail": "EMAIL",
+    "bookingIdPlaceholder": "BK-1768...",
+    "eventNamePlaceholder": "Event name...",
+    "clientNamePlaceholder": "Client name...",
+    "emailPlaceholder": "email@example.com",
+    "actions": "Actions",
     "addNew": "Add New Booking",
     "noBookings": "No bookings yet",
     "createFirst": "Create your first booking",
@@ -121,6 +167,9 @@
     "total": "Total €",
     "toPay": "To Pay €",
     "date": "Date",
-    "noEvent": "No event"
+    "noEvent": "No event",
+    "createdBy": "Created By",
+    "clientInfo": "Client Information",
+    "filters": "Filters"
   }
 }

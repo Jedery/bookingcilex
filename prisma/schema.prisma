@@ -35,7 +35,14 @@ model User {
   moveInDate    DateTime?              // Data inizio affitto
   moveOutDate   DateTime?              // Data fine affitto (se definita)
   
+  // Performance & Activity
+  fines         Float    @default(0)   // Multe da pagare
+  rating        Float    @default(0)   // Valutazione (0-5)
+  daysOff       Int      @default(0)   // Giorni di riposo presi
+  lastCheckout  DateTime?              // Ultimo cashout effettuato
+  
   transactions  Transaction[]
+  activities    UserActivity[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,6 +98,8 @@ model Booking {
   soldByName    String?  // Name for quick reference
   confirmedAt   DateTime? // When status changed to Confirmed
   cancelledAt   DateTime? // When booking was cancelled
+  location      String?  // Beach/venue location: "Playa d'en Bossa", "Cala Jondal", etc.
+  salesZone     String?  // Zona Vendita: Online, Ibiza Centro, Hotel, Social, ecc.
   
   // Guest list access
   guestList     String?
@@ -162,4 +171,21 @@ model Property {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model UserActivity {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  date        DateTime // Data dell'attività
+  type        String   // "work" | "off" | "sick" | "vacation"
+  hours       Float?   // Ore lavorate (se type = work)
+  notes       String?  // Note extra
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([date])
 }

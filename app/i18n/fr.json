@@ -2,12 +2,17 @@
   "sidebar": {
     "brand": "BookingCilex",
     "dashboard": "Tableau de bord",
+    "analytics": "Analytiques",
     "bookings": "Réservations",
     "addBooking": "Ajouter une Réservation",
     "listBookings": "Liste des Réservations",
     "myProfile": "Mon Profil",
     "manageProfiles": "Gérer les Profils",
     "profile": "Mon Profil",
+    "wallet": "Portefeuille",
+    "myWallet": "Mon Portefeuille",
+    "teamWallet": "Portefeuille de l'Équipe",
+    "housingManagement": "Gestion des Locations",
     "bookingConfig": "Configuration des Réservations",
     "logout": "Déconnexion"
   },
@@ -19,17 +24,44 @@
     "title": "Vue d'ensemble du Tableau de bord",
     "teamAnalysis": "Analyse d'Équipe",
     "today": "Aujourd'hui",
-    "thisWeek": "Cette Semaine",
-    "thisMonth": "Ce Mois"
+    "thisWeek": "Semaine",
+    "thisMonth": "Mois"
+  },
+  "revenueChart": {
+    "title": "Graphique des Revenus",
+    "thisYear": "Cette Année",
+    "lastYear": "Année Dernière",
+    "day": "Jour",
+    "week": "Semaine",
+    "month": "Mois",
+    "year": "Année"
+  },
+  "analytics": {
+    "title": "Tableau de bord Analytique",
+    "subtitle": "Analyse détaillée des performances: emplacements, horaires et tendances saisonnières",
+    "locationPerformance": "Performance par Emplacement",
+    "timeAnalysis": "Analyse Horaire des Ventes",
+    "seasonalTrends": "Tendances Saisonnières",
+    "sales": "ventes",
+    "insight": "Aperçu",
+    "timeSlotInsight": "La plage horaire 16:00-18:00 est la plus performante avec <strong>115 ventes</strong>. Envisagez d'allouer plus de vendeurs pendant cette période pour maximiser les résultats.",
+    "seasonalAnalysis": "Analyse Saisonnière",
+    "seasonInsight": "<strong>Août</strong> est le mois de pointe avec <strong>1,580 ventes</strong> (51/jour). Planifiez votre équipe en conséquence: renforcez les meilleurs emplacements pendant les créneaux 14:00-20:00.",
+    "showAll": "Tout afficher",
+    "showLess": "Afficher moins",
+    "perDay": "/jour"
   },
   "kpi": {
     "totalBookings": "Total des Réservations",
     "confirmed": "Confirmés",
     "pending": "En Attente",
-    "cancelled": "Annulés"
+    "cancelled": "Annulés",
+    "today": "Aujourd'hui",
+    "week": "Semaine",
+    "month": "Mois"
   },
   "teamPerformance": {
-    "title": "Performance de l'Équipe"
+    "title": "Classement Équipe"
   },
   "sellerAnalytics": {
     "title": "Analyse Individuelle des Vendeurs",
@@ -108,7 +140,21 @@
     "saveBooking": "Enregistrer la Réservation"
   },
   "listBooking": {
-    "title": "Liste des Réservations",
+    "title": "Gestion des Réservations",
+    "subtitle": "Liste complète de toutes les réservations",
+    "activeFilter": "Filtre actif",
+    "removeFilter": "Supprimer le filtre",
+    "showFilters": "Afficher les Filtres",
+    "hideFilters": "Masquer les Filtres",
+    "searchBookingId": "ID RÉSERVATION",
+    "searchEventName": "NOM DE L'ÉVÉNEMENT",
+    "searchClientName": "NOM DU CLIENT",
+    "searchEmail": "EMAIL",
+    "bookingIdPlaceholder": "BK-1768...",
+    "eventNamePlaceholder": "Nom de l'événement...",
+    "clientNamePlaceholder": "Nom du client...",
+    "emailPlaceholder": "email@exemple.com",
+    "actions": "Actions",
     "addNew": "Ajouter une Nouvelle Réservation",
     "noBookings": "Pas encore de réservations",
     "createFirst": "Créez votre première réservation",
@@ -121,6 +167,9 @@
     "total": "Total €",
     "toPay": "À Payer €",
     "date": "Date",
-    "noEvent": "Aucun événement"
+    "noEvent": "Aucun événement",
+    "createdBy": "Créé par",
+    "clientInfo": "Informations Client",
+    "filters": "Filtres"
   }
 }

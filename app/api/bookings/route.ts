@@ -72,6 +72,7 @@ export async function POST(request: Request) {
         eventTime: body.eventTime || null,
         soldBy: body.soldBy || null,
         soldByName: body.soldByName || null,
+        salesZone: body.salesZone || null,
       },
     });
 

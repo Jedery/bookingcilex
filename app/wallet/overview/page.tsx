@@ -30,73 +30,38 @@ export default function WalletOverviewPage() {
   const [roleFilter, setRoleFilter] = useState<string>('all');
 
   useEffect(() => {
-    // Dati mock per ora
-    setTimeout(() => {
-      setUsers([
-        {
-          id: '1',
-          name: 'Marco Rossi',
-          email: 'marco.rossi@cilex.com',
-          role: 'Promoter',
-          walletBalance: 4500,
-          rentAmount: 150,
-          rentType: 'weekly',
-          totalIncome: 5250,
-          totalExpenses: 750,
-          pendingTransactions: 2,
-        },
-        {
-          id: '2',
-          name: 'Sara Bianchi',
-          email: 'sara.bianchi@cilex.com',
-          role: 'Promoter',
-          walletBalance: 6800,
-          rentAmount: 150,
-          rentType: 'weekly',
-          totalIncome: 8200,
-          totalExpenses: 1400,
-          pendingTransactions: 1,
-        },
-        {
-          id: '3',
-          name: 'Luca Verdi',
-          email: 'luca.verdi@cilex.com',
-          role: 'Manager',
-          walletBalance: 10200,
-          rentAmount: 200,
-          rentType: 'weekly',
-          totalIncome: 12500,
-          totalExpenses: 2300,
-          pendingTransactions: 0,
-        },
-        {
-          id: '4',
-          name: 'Anna Neri',
-          email: 'anna.neri@cilex.com',
-          role: 'Promoter',
-          walletBalance: 3200,
-          rentAmount: 150,
-          rentType: 'weekly',
-          totalIncome: 4100,
-          totalExpenses: 900,
-          pendingTransactions: 3,
-        },
-        {
-          id: '5',
-          name: 'Paolo Gialli',
-          email: 'paolo.gialli@cilex.com',
-          role: 'Collaboratore',
-          walletBalance: 1850,
-          rentAmount: 100,
-          rentType: 'weekly',
-          totalIncome: 2200,
-          totalExpenses: 350,
-          pendingTransactions: 0,
-        },
-      ]);
-      setLoading(false);
-    }, 500);
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/api/users');
+      const data = await response.json();
+      
+      // Filtra SuperAdmin e inattivi
+      const activeUsers = data.filter((u: any) => u.role !== 'SuperAdmin' && u.isActive);
+      
+      // Mappa gli utenti con i dati reali
+      const mappedUsers: UserWallet[] = activeUsers.map((u: any) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        walletBalance: u.walletBalance || 0,
+        rentAmount: u.rentAmount,
+        rentType: u.rentType,
+        totalIncome: 0, // Calcoleremo dopo
+        totalExpenses: 0, // Calcoleremo dopo
+        pendingTransactions: 0, // Calcoleremo dopo
+      }));
+      
+      setUsers(mappedUsers);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setLoading(false);
+    }
+  };
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('it-IT', {
@@ -139,7 +104,7 @@ export default function WalletOverviewPage() {
         <Sidebar t={t} />
         <div className="main-content">
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '20px' }}>💰</div>
+            <div style={{ marginBottom: '20px' }}><Wallet size={48} color="#c89664" /></div>
             <p style={{ color: '#888' }}>Caricamento panoramica wallet...</p>
           </div>
         </div>

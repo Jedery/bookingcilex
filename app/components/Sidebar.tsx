@@ -3,7 +3,7 @@
 import { useAuth } from '../context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight, Menu, X, Settings, Wallet, Home } from 'lucide-react';
+import { LayoutDashboard, Calendar, Plus, List, User, Users, LogOut, ChevronRight, Menu, X, Settings, Wallet, Home, TrendingUp } from 'lucide-react';
 
 export default function Sidebar({ t }: { t: (key: string) => string }) {
   const { user, logout } = useAuth();
@@ -13,6 +13,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
   const [walletOpen, setWalletOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -27,7 +28,24 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
 
   return (
     <>
-      <div className="sidebar">
+      {/* Desktop Hamburger Button */}
+      <button
+        className="sidebar-toggle-btn"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+      >
+        {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+      </button>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <div className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
       <div className="sidebar-brand">
         <a href="/" style={{ textDecoration: 'none', color: 'inherit', textAlign: 'center' }}>
           <div className="sidebar-brand-logo">CILEX</div>
@@ -88,6 +106,17 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
             <span className="sidebar-text">{t('sidebar.dashboard')}</span>
           </a>
         </li>
+        
+        {/* Analytics - Available for all roles */}
+        <li className="sidebar-item">
+          <a href="/analytics" className="sidebar-link">
+            <span className="sidebar-icon">
+              <TrendingUp size={20} strokeWidth={1.5} />
+            </span>
+            <span className="sidebar-text">{t('sidebar.analytics')}</span>
+          </a>
+        </li>
+        
         <li className="sidebar-item">
           <div 
             className="sidebar-link" 
@@ -134,7 +163,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
             <span className="sidebar-icon">
               <Wallet size={20} strokeWidth={1.5} />
             </span>
-            <span className="sidebar-text">Wallet</span>
+            <span className="sidebar-text">{t('sidebar.wallet')}</span>
             <span style={{ marginLeft: 'auto', transition: 'transform 0.3s ease', transform: walletOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               <ChevronRight size={16} />
             </span>
@@ -147,7 +176,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                 <span className="sidebar-icon">
                   <User size={18} strokeWidth={1.5} />
                 </span>
-                <span className="sidebar-text">Il Mio Wallet</span>
+                <span className="sidebar-text">{t('sidebar.myWallet')}</span>
               </a>
             </li>
             {(user?.role === 'SuperAdmin' || user?.role === 'Founder' || user?.role === 'Manager') && (
@@ -157,7 +186,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                     <span className="sidebar-icon">
                       <Users size={18} strokeWidth={1.5} />
                     </span>
-                    <span className="sidebar-text">Wallet Team</span>
+                    <span className="sidebar-text">{t('sidebar.teamWallet')}</span>
                   </a>
                 </li>
                 <li className="sidebar-item sidebar-subitem">
@@ -165,7 +194,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                     <span className="sidebar-icon">
                       <Home size={18} strokeWidth={1.5} />
                     </span>
-                    <span className="sidebar-text">Gestione Affitti</span>
+                    <span className="sidebar-text">{t('sidebar.housingManagement')}</span>
                   </a>
                 </li>
               </>
@@ -183,7 +212,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
             <span className="sidebar-icon">
               <User size={20} strokeWidth={1.5} />
             </span>
-            <span className="sidebar-text">Profilo</span>
+            <span className="sidebar-text">{t('sidebar.profile')}</span>
             <span style={{ marginLeft: 'auto', transition: 'transform 0.3s ease', transform: profileOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               <ChevronRight size={16} />
             </span>
@@ -196,7 +225,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                 <span className="sidebar-icon">
                   <User size={18} strokeWidth={1.5} />
                 </span>
-                <span className="sidebar-text">Il Mio Profilo</span>
+                <span className="sidebar-text">{t('sidebar.myProfile')}</span>
               </a>
             </li>
             {(user?.role === 'SuperAdmin' || user?.role === 'Founder' || user?.role === 'Manager') && (
@@ -205,7 +234,7 @@ export default function Sidebar({ t }: { t: (key: string) => string }) {
                   <span className="sidebar-icon">
                     <Users size={18} strokeWidth={1.5} />
                   </span>
-                  <span className="sidebar-text">Gestisci Profili</span>
+                  <span className="sidebar-text">{t('sidebar.manageProfiles')}</span>
                 </a>
               </li>
             )}

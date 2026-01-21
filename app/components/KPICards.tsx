@@ -39,14 +39,17 @@ export default function KPICards({ cards }: KPICardsProps) {
         @media (max-width: 768px) {
           .kpi-cards-container {
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 0;
-            margin-top: 20px;
+            gap: 16px;
+            margin-bottom: 20px;
+            margin-top: 0;
           }
 
           .kpi-card {
-            padding: 18px !important;
-            border-radius: 16px !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            background: rgba(20, 20, 20, 0.6) !important;
+            border: 1px solid rgba(200, 150, 100, 0.3) !important;
+            box-shadow: none !important;
           }
 
           .kpi-card-header {
@@ -97,45 +100,39 @@ export default function KPICards({ cards }: KPICardsProps) {
           className="kpi-card"
           style={{
             position: 'relative',
-            background: `linear-gradient(135deg, ${card.bgColor || 'rgba(26, 26, 30, 0.95)'} 0%, rgba(15, 15, 18, 0.95) 100%)`,
-            backdropFilter: 'blur(20px)',
-            border: `2px solid ${card.color || 'rgba(200, 150, 100, 0.2)'}`,
-            borderRadius: '20px',
-            padding: '28px',
-            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            background: `linear-gradient(135deg, ${card.bgColor || 'rgba(26, 26, 30, 0.95)'} 0%, rgba(15, 15, 18, 0.98) 100%)`,
+            backdropFilter: 'blur(30px)',
+            border: `2px solid ${card.color || 'rgba(200, 150, 100, 0.25)'}`,
+            borderRadius: '24px',
+            padding: '32px',
+            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             cursor: card.link ? 'pointer' : 'default',
             overflow: 'hidden',
-            boxShadow: `0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)`,
+            boxShadow: `0 12px 40px rgba(0, 0, 0, 0.5), 
+                       inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                       0 0 0 1px rgba(0, 0, 0, 0.1)`,
           }}
           onMouseEnter={(e) => {
             if (card.link) {
-              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-              e.currentTarget.style.borderColor = card.color || 'rgba(200, 150, 100, 0.6)';
-              e.currentTarget.style.boxShadow = `0 20px 60px ${card.color || 'rgba(200, 150, 100, 0.3)'}, inset 0 1px 0 rgba(255, 255, 255, 0.1)`;
+              e.currentTarget.style.transform = 'translateY(-10px) scale(1.03)';
+              e.currentTarget.style.borderColor = card.color || 'rgba(200, 150, 100, 0.7)';
+              e.currentTarget.style.boxShadow = `0 20px 60px rgba(0, 0, 0, 0.6), 
+                                                  0 0 50px ${card.color || 'rgba(200, 150, 100, 0.5)'}, 
+                                                  inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                                                  0 0 0 1px rgba(0, 0, 0, 0.15)`;
             }
           }}
           onMouseLeave={(e) => {
             if (card.link) {
               e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.borderColor = card.color || 'rgba(200, 150, 100, 0.2)';
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.borderColor = card.color || 'rgba(200, 150, 100, 0.25)';
+              e.currentTarget.style.boxShadow = `0 12px 40px rgba(0, 0, 0, 0.5), 
+                                                  inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                                                  0 0 0 1px rgba(0, 0, 0, 0.1)`;
             }
           }}
         >
-          {/* Gradient overlay effect */}
-          <div 
-            className="kpi-card-gradient"
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              width: '80px',
-              height: '80px',
-              background: `radial-gradient(circle at center, ${card.color || 'rgba(200, 150, 100, 0.15)'} 0%, transparent 70%)`,
-              opacity: 0.3,
-              pointerEvents: 'none',
-            }} 
-          />
+
           
           {/* Icon container with modern design */}
           <div 
@@ -165,17 +162,16 @@ export default function KPICards({ cards }: KPICardsProps) {
             <div 
               className="kpi-card-icon"
               style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '16px',
-                background: `linear-gradient(135deg, ${card.color || 'rgba(200, 150, 100, 0.2)'}, transparent)`,
-                border: `1.5px solid ${card.color || 'rgba(200, 150, 100, 0.3)'}`,
+                width: '64px',
+                height: '64px',
+                borderRadius: '18px',
+                background: `linear-gradient(135deg, ${card.color || 'rgba(200, 150, 100, 0.25)'}, transparent)`,
+                border: `2px solid ${card.color || 'rgba(200, 150, 100, 0.4)'}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: card.color || '#c89664',
-                boxShadow: `0 8px 24px ${card.color || 'rgba(200, 150, 100, 0.15)'}`,
-                transition: 'all 0.3s ease',
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               {card.icon}
@@ -194,13 +190,13 @@ export default function KPICards({ cards }: KPICardsProps) {
             <h2 
               className="kpi-card-value"
               style={{ 
-                fontSize: '56px', 
-                fontWeight: '700', 
+                fontSize: '62px', 
+                fontWeight: '800', 
                 color: card.color || '#fff', 
-                letterSpacing: '-2px',
+                letterSpacing: '-3px',
                 margin: 0,
                 lineHeight: 1,
-                textShadow: `0 4px 24px ${card.color || 'rgba(200, 150, 100, 0.3)'}`,
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               {card.value}

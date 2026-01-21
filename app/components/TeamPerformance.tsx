@@ -1,6 +1,8 @@
 'use client';
 
 import { Trophy, Medal, TrendingUp, Zap, Target, Award } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SalesData {
   name: string;
@@ -23,8 +25,14 @@ interface TeamPerformanceProps {
 }
 
 export default function TeamPerformance({ salesData, period, setPeriod, t, onSelectSeller }: TeamPerformanceProps) {
+  const [showAll, setShowAll] = useState(false);
+  const router = useRouter();
+  
   // Ordina per revenue decrescente
   const sortedData = [...salesData].sort((a, b) => b.revenue - a.revenue);
+  
+  // Mostra solo i primi 5 o tutti in base allo stato
+  const displayedData = showAll ? sortedData : sortedData.slice(0, 5);
 
   const getMedalIcon = (position: number) => {
     switch (position) {
@@ -65,13 +73,15 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
     <>
       <style jsx>{`
         .team-performance-container {
-          background: rgba(20, 20, 20, 0.6);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(200, 150, 100, 0.3);
-          border-radius: 12px;
-          padding: 24px;
-          margin-bottom: 20px;
-          margin-top: 24px;
+          background: linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%);
+          backdrop-filter: blur(30px);
+          border: 2px solid rgba(200, 150, 100, 0.25);
+          borderRadius: 24px;
+          padding: 32px;
+          margin-bottom: 24px;
+          margin-top: 28px;
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+          transition: all 0.4s ease;
         }
         .member-card {
           display: flex;
@@ -123,6 +133,12 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
           .stat-item {
             text-align: center;
           }
+          .top-badge {
+            position: static !important;
+            margin-top: 8px;
+            margin-left: 62px;
+            align-self: flex-start;
+          }
         }
       `}</style>
       <div className="team-performance-container">
@@ -140,29 +156,17 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
           }}>
             <Trophy size={26} color="#FFD700" strokeWidth={1.5} />
           </div>
-          <div>
-            <h3 style={{ 
-              fontSize: '26px', 
-              fontWeight: '700', 
-              color: '#fff', 
-              letterSpacing: '-0.3px', 
-              margin: 0,
-              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-              textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-            }}>
-              Classifica Team
-            </h3>
-            <p style={{ 
-              fontSize: '13px', 
-              color: '#c89664', 
-              margin: '6px 0 0 0', 
-              letterSpacing: '1px',
-              fontWeight: '600',
-              textTransform: 'uppercase',
-            }}>
-              {period === 'today' ? 'Oggi' : period === 'week' ? 'Questa Settimana' : 'Questo Mese'}
-            </p>
-          </div>
+          <h3 style={{ 
+            fontSize: '26px', 
+            fontWeight: '700', 
+            color: '#fff', 
+            letterSpacing: '-0.3px', 
+            margin: 0,
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+          }}>
+            {t('teamPerformance.title')}
+          </h3>
         </div>
         
         {/* Period Selector */}
@@ -189,7 +193,7 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
 
       {/* Leaderboard */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {sortedData.map((member, index) => {
+        {displayedData.map((member, index) => {
           const colors = getPositionColor(index);
           const isTopThree = index < 3;
           
@@ -206,7 +210,7 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
                 overflow: 'hidden',
                 cursor: 'pointer',
               }}
-              onClick={() => onSelectSeller?.(member)}
+              onClick={() => router.push(`/user/${encodeURIComponent(member.name)}`)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateX(5px)';
                 e.currentTarget.style.boxShadow = `0 8px 24px ${colors.border}`;
@@ -311,7 +315,7 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
 
               {/* Top 3 Badge with Medal */}
               {isTopThree && (
-                <div style={{
+                <div className="top-badge" style={{
                   position: 'absolute',
                   top: '8px',
                   right: '8px',
@@ -328,7 +332,9 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
                   gap: '5px',
                   boxShadow: `0 2px 8px ${colors.text}40`,
                 }}>
-                  <span style={{ fontSize: '14px' }}>{['🏆', '🥈', '🥉'][index]}</span>
+                  {index === 0 ? <Trophy size={14} color="#c89664" /> : 
+                   index === 1 ? <Medal size={14} color="#9ca3af" /> :
+                   <Medal size={14} color="#cd7f32" />}
                   Top {index + 1}
                 </div>
               )}
@@ -336,6 +342,36 @@ export default function TeamPerformance({ salesData, period, setPeriod, t, onSel
           );
         })}
       </div>
+
+      {/* Button to show all users if there are more than 5 */}
+      {sortedData.length > 5 && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          style={{
+            marginTop: '16px',
+            padding: '12px 24px',
+            background: 'rgba(200, 150, 100, 0.15)',
+            border: '1px solid rgba(200, 150, 100, 0.3)',
+            borderRadius: '8px',
+            color: '#c89664',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            width: '100%',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(200, 150, 100, 0.25)';
+            e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(200, 150, 100, 0.15)';
+            e.currentTarget.style.borderColor = 'rgba(200, 150, 100, 0.3)';
+          }}
+        >
+          {showAll ? 'Mostra meno' : `Mostra tutti (${sortedData.length})`}
+        </button>
+      )}
 
       {/* Footer Message */}
       {sortedData.length > 0 && (

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { useTranslation } from '../../i18n/useTranslation';
+import { useAuth } from '../../context/AuthContext';
+import { LogOut, Ban, DollarSign, Check, X, Star } from 'lucide-react';
 
 // Configurazione eventi organizzati per gruppi (come in add booking)
 const DEFAULT_EVENTS_GROUPS = [
@@ -92,6 +94,7 @@ const DEFAULT_FIELD_CONFIG = {
 export default function BookingConfigPage() {
   const router = useRouter();
   const { t, language, setLanguage } = useTranslation();
+  const { logout } = useAuth();
   
   // Controllo accesso - solo superadmin e founder
   const [userRole, setUserRole] = useState('superadmin'); // Simulo, poi integrerai con auth
@@ -105,6 +108,11 @@ export default function BookingConfigPage() {
   const [isEditingGroup, setIsEditingGroup] = useState(false);
   const [isEditingEvent, setIsEditingEvent] = useState(false);
   const [activeTab, setActiveTab] = useState<'events' | 'fields' | 'pricing'>('events');
+
+  const handleLogout = () => {
+    logout();
+    router.push('/auth/login');
+  };
   
   // Form per gruppo
   const [groupForm, setGroupForm] = useState({
@@ -363,7 +371,9 @@ export default function BookingConfigPage() {
             border: '2px solid rgba(239, 68, 68, 0.3)',
             borderRadius: '16px',
           }}>
-            <h1 style={{ fontSize: '48px', marginBottom: '20px' }}>🚫</h1>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+              <Ban size={48} color="#ef4444" />
+            </div>
             <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '16px' }}>Accesso Negato</h2>
             <p style={{ fontSize: '16px', color: '#888' }}>
               Solo Superadmin e Founder possono accedere a questa sezione.
@@ -395,14 +405,46 @@ export default function BookingConfigPage() {
       <Sidebar t={t} />
       <div className="main-content">
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start', 
+          marginBottom: '32px',
+          padding: '24px',
+          background: 'linear-gradient(135deg, rgba(30, 30, 35, 0.6), rgba(20, 20, 25, 0.6))',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '12px',
+        }}>
           <div>
-            <h1 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '8px' }}>
-              ⚙️ Configurazione Prenotazioni
-            </h1>
-            <p style={{ fontSize: '14px', color: '#888' }}>
-              👑 Accesso Riservato: {userRole.toUpperCase()}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+              <div style={{
+                width: '8px',
+                height: '36px',
+                background: 'linear-gradient(180deg, #3b82f6, #1d4ed8)',
+                borderRadius: '4px',
+              }}></div>
+              <h1 style={{ fontSize: '28px', fontWeight: '600', margin: 0, letterSpacing: '-0.5px' }}>
+                System Configuration
+              </h1>
+            </div>
+            <p style={{ fontSize: '14px', color: '#94a3b8', marginLeft: '20px', fontWeight: '400' }}>
+              Booking Management Settings
             </p>
+            <div style={{ 
+              display: 'inline-block',
+              marginTop: '12px',
+              marginLeft: '20px',
+              padding: '6px 12px',
+              background: 'rgba(59, 130, 246, 0.1)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '6px',
+              fontSize: '12px',
+              color: '#60a5fa',
+              fontWeight: '500',
+              letterSpacing: '0.5px',
+            }}>
+              ACCESS: {userRole.toUpperCase()}
+            </div>
           </div>
           <LanguageSwitcher language={language} setLanguage={setLanguage} />
         </div>
@@ -410,74 +452,66 @@ export default function BookingConfigPage() {
         {/* Tabs */}
         <div style={{ 
           display: 'flex', 
-          gap: '12px', 
-          marginBottom: '30px',
-          borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
-          paddingBottom: '0',
+          gap: '0px', 
+          marginBottom: '32px',
+          background: 'rgba(30, 30, 35, 0.4)',
+          borderRadius: '10px',
+          padding: '4px',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
         }}>
           <button
             onClick={() => setActiveTab('events')}
             style={{
-              padding: '14px 28px',
-              background: activeTab === 'events' ? 'linear-gradient(135deg, #c89664, #b87d4b)' : 'transparent',
-              border: 'none',
-              borderBottom: activeTab === 'events' ? '3px solid #c89664' : '3px solid transparent',
-              color: activeTab === 'events' ? '#fff' : '#888',
-              fontWeight: '700',
-              fontSize: '15px',
+              flex: 1,
+              padding: '12px 20px',
+              background: activeTab === 'events' ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+              border: activeTab === 'events' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid transparent',
+              borderRadius: '8px',
+              color: activeTab === 'events' ? '#60a5fa' : '#64748b',
+              fontWeight: '600',
+              fontSize: '14px',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'all 0.2s ease',
+              letterSpacing: '0.3px',
             }}
           >
-            🎪 Eventi
+            Events Management
           </button>
           <button
             onClick={() => setActiveTab('fields')}
             style={{
-              padding: '14px 28px',
-              background: activeTab === 'fields' ? 'linear-gradient(135deg, #4ecdc4, #44a08d)' : 'transparent',
-              border: 'none',
-              borderBottom: activeTab === 'fields' ? '3px solid #4ecdc4' : '3px solid transparent',
-              color: activeTab === 'fields' ? '#fff' : '#888',
-              fontWeight: '700',
-              fontSize: '15px',
+              flex: 1,
+              padding: '12px 20px',
+              background: activeTab === 'fields' ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+              border: activeTab === 'fields' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid transparent',
+              borderRadius: '8px',
+              color: activeTab === 'fields' ? '#60a5fa' : '#64748b',
+              fontWeight: '600',
+              fontSize: '14px',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'all 0.2s ease',
+              letterSpacing: '0.3px',
             }}
           >
-            📝 Campi Form
+            Form Fields
           </button>
           <button
             onClick={() => setActiveTab('pricing')}
             style={{
-              padding: '14px 28px',
-              background: activeTab === 'pricing' ? 'linear-gradient(135deg, #10b981, #059669)' : 'transparent',
-              border: 'none',
-              borderBottom: activeTab === 'pricing' ? '3px solid #10b981' : '3px solid transparent',
-              color: activeTab === 'pricing' ? '#fff' : '#888',
-              fontWeight: '700',
-              fontSize: '15px',
+              flex: 1,
+              padding: '12px 20px',
+              background: activeTab === 'pricing' ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+              border: activeTab === 'pricing' ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid transparent',
+              borderRadius: '8px',
+              color: activeTab === 'pricing' ? '#60a5fa' : '#64748b',
+              fontWeight: '600',
+              fontSize: '14px',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              transition: 'all 0.2s ease',
+              letterSpacing: '0.3px',
             }}
           >
-            💰 Prezzi Dinamici
-          </button>
-          <button
-            onClick={() => setActiveTab('times')}
-            style={{
-              padding: '14px 28px',
-              background: activeTab === 'times' ? 'linear-gradient(135deg, #a29bfe, #6c5ce7)' : 'transparent',
-              border: 'none',
-              borderBottom: activeTab === 'times' ? '3px solid #a29bfe' : '3px solid transparent',
-              color: activeTab === 'times' ? '#fff' : '#888',
-              fontWeight: '700',
-              fontSize: '15px',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-            }}
-          >
-            ⏰ Orari Eventi
+            Dynamic Pricing
           </button>
         </div>
 
@@ -485,33 +519,38 @@ export default function BookingConfigPage() {
         {activeTab === 'events' && (
           <div>
             {/* Sezione Gruppi/Categorie */}
-            <div style={{ marginBottom: '30px' }}>
+            <div style={{ marginBottom: '32px' }}>
               <div className="card" style={{ 
-                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
-                border: '2px solid rgba(200, 150, 100, 0.2)',
-                borderRadius: '16px',
-                padding: '24px',
+                background: 'rgba(30, 30, 35, 0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                padding: '28px',
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#c89664' }}>
-                    🎭 Gestione Categorie
-                  </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '4px', letterSpacing: '-0.3px' }}>
+                      Category Management
+                    </h3>
+                    <p style={{ fontSize: '13px', color: '#64748b', fontWeight: '400' }}>Organize events by categories</p>
+                  </div>
                   <button
                     onClick={() => {
                       setIsEditingGroup(true);
-                      setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
+                      setGroupForm({ id: 0, group: '', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' });
                     }}
                     style={{
                       padding: '10px 20px',
-                      background: 'linear-gradient(135deg, #c89664, #b87d4b)',
+                      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
                       border: 'none',
-                      borderRadius: '10px',
+                      borderRadius: '8px',
                       color: '#fff',
-                      fontWeight: '700',
+                      fontWeight: '600',
+                      fontSize: '14px',
                       cursor: 'pointer',
+                      letterSpacing: '0.3px',
                     }}
                   >
-                    ➕ Nuova Categoria
+                    + Add Category
                   </button>
                 </div>
 
@@ -519,24 +558,25 @@ export default function BookingConfigPage() {
                 {isEditingGroup && (
                   <div style={{
                     padding: '20px',
-                    background: 'rgba(200, 150, 100, 0.1)',
-                    border: '1px solid rgba(200, 150, 100, 0.3)',
-                    borderRadius: '12px',
+                    background: 'rgba(59, 130, 246, 0.05)',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    borderRadius: '10px',
                     marginBottom: '20px',
                   }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '14px' }}>
                       <input
                         type="text"
                         value={groupForm.group}
                         onChange={(e) => setGroupForm({ ...groupForm, group: e.target.value })}
-                        placeholder="es. 🍹 OPEN BAR"
+                        placeholder="Category name"
                         style={{
-                          padding: '14px',
-                          background: '#1a1a1e',
-                          border: '1.5px solid #2a3a52',
-                          borderRadius: '10px',
-                          color: '#fff',
-                          fontSize: '15px',
+                          padding: '12px 16px',
+                          background: 'rgba(15, 15, 20, 0.6)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '8px',
+                          color: '#f1f5f9',
+                          fontSize: '14px',
+                          fontWeight: '400',
                         }}
                       />
                       <input
@@ -544,11 +584,12 @@ export default function BookingConfigPage() {
                         value={groupForm.color}
                         onChange={(e) => setGroupForm({ ...groupForm, color: e.target.value })}
                         style={{
-                          padding: '8px',
-                          background: '#1a1a1e',
-                          border: '1.5px solid #2a3a52',
-                          borderRadius: '10px',
+                          padding: '6px',
+                          background: 'rgba(15, 15, 20, 0.6)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '8px',
                           cursor: 'pointer',
+                          height: '44px',
                         }}
                       />
                       <div style={{ display: 'flex', gap: '8px' }}>
@@ -557,88 +598,94 @@ export default function BookingConfigPage() {
                           disabled={!groupForm.group}
                           style={{
                             flex: 1,
-                            padding: '14px',
-                            background: !groupForm.group ? 'rgba(100, 100, 100, 0.3)' : 'linear-gradient(135deg, #10b981, #059669)',
+                            padding: '12px',
+                            background: !groupForm.group ? 'rgba(100, 100, 100, 0.2)' : 'linear-gradient(135deg, #10b981, #059669)',
                             border: 'none',
-                            borderRadius: '10px',
+                            borderRadius: '8px',
                             color: '#fff',
-                            fontWeight: '700',
+                            fontWeight: '600',
+                            fontSize: '14px',
                             cursor: !groupForm.group ? 'not-allowed' : 'pointer',
                           }}
                         >
-                          ✅
+                          Save
                         </button>
                         <button
                           onClick={() => {
                             setIsEditingGroup(false);
-                            setGroupForm({ id: 0, group: '', color: '#ff6b9d', bgColor: 'rgba(255, 107, 157, 0.15)' });
+                            setGroupForm({ id: 0, group: '', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' });
                           }}
                           style={{
-                            padding: '14px',
-                            background: 'rgba(239, 68, 68, 0.2)',
-                            border: 'none',
-                            borderRadius: '10px',
+                            padding: '12px',
+                            background: 'rgba(239, 68, 68, 0.15)',
+                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            borderRadius: '8px',
                             color: '#ef4444',
-                            fontWeight: '700',
+                            fontWeight: '600',
+                            fontSize: '14px',
                             cursor: 'pointer',
                           }}
                         >
-                          ❌
+                          Cancel
                         </button>
                       </div>
                     </div>
                   </div>
-                )}
+                )}  
 
                 {/* Lista Gruppi */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
                   {eventsGroups.map((group) => (
                     <div
                       key={group.id}
                       style={{
-                        padding: '16px',
-                        background: group.bgColor,
-                        border: `2px solid ${group.color}`,
-                        borderRadius: '12px',
+                        padding: '18px',
+                        background: 'rgba(15, 15, 20, 0.4)',
+                        border: `1px solid ${group.color}40`,
+                        borderLeft: `3px solid ${group.color}`,
+                        borderRadius: '10px',
+                        transition: 'all 0.2s ease',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <h4 style={{ fontSize: '16px', fontWeight: '700', color: group.color, margin: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#f1f5f9', margin: 0, letterSpacing: '-0.2px' }}>
                           {group.group}
                         </h4>
-                        <div style={{ display: 'flex', gap: '4px' }}>
+                        <div style={{ display: 'flex', gap: '6px' }}>
                           <button
                             onClick={() => handleEditGroup(group)}
                             style={{
                               padding: '6px 10px',
-                              background: 'rgba(78, 205, 196, 0.2)',
-                              border: 'none',
+                              background: 'rgba(59, 130, 246, 0.15)',
+                              border: '1px solid rgba(59, 130, 246, 0.3)',
                               borderRadius: '6px',
-                              color: '#4ecdc4',
-                              fontSize: '12px',
+                              color: '#60a5fa',
+                              fontSize: '11px',
+                              fontWeight: '600',
                               cursor: 'pointer',
                             }}
                           >
-                            ✏️
+                            Edit
                           </button>
                           <button
                             onClick={() => handleDeleteGroup(group.id)}
                             style={{
                               padding: '6px 10px',
-                              background: 'rgba(239, 68, 68, 0.2)',
-                              border: 'none',
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              border: '1px solid rgba(239, 68, 68, 0.3)',
                               borderRadius: '6px',
                               color: '#ef4444',
-                              fontSize: '12px',
+                              fontSize: '11px',
+                              fontWeight: '600',
                               cursor: 'pointer',
                             }}
                           >
-                            🗑️
+                            Delete
                           </button>
                         </div>
                       </div>
-                      <div style={{ fontSize: '13px', color: '#888' }}>
-                        {group.events.length} eventi
+                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
+                        {group.events.length} {group.events.length === 1 ? 'event' : 'events'}
                       </div>
                     </div>
                   ))}
@@ -650,56 +697,71 @@ export default function BookingConfigPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               {/* Lista Eventi Organizzati per Gruppo */}
               <div className="card" style={{ 
-                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
-                border: '2px solid rgba(78, 205, 196, 0.2)',
-                borderRadius: '16px',
-                padding: '24px',
+                background: 'rgba(30, 30, 35, 0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                padding: '28px',
                 maxHeight: '700px',
                 overflowY: 'auto',
               }}>
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: '#4ecdc4' }}>
-                  📋 Eventi per Categoria
+                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '6px', letterSpacing: '-0.3px' }}>
+                  Events by Category
                 </h3>
+                <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px', fontWeight: '400' }}>Manage all events grouped by categories</p>
                 
                 {eventsGroups.map((group) => (
                   <div key={group.id} style={{ marginBottom: '24px' }}>
                     <h4 style={{
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      color: group.color,
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#f1f5f9',
                       marginBottom: '12px',
-                      padding: '10px 16px',
-                      background: group.bgColor,
+                      padding: '12px 16px',
+                      background: 'rgba(15, 15, 20, 0.4)',
                       borderRadius: '8px',
-                      borderLeft: `4px solid ${group.color}`,
+                      borderLeft: `3px solid ${group.color}`,
+                      letterSpacing: '-0.2px',
                     }}>
-                      {group.group} ({group.events.length})
+                      {group.group} <span style={{ color: '#64748b', fontWeight: '400', fontSize: '13px' }}>({group.events.length})</span>
                     </h4>
                     
                     {group.events.length === 0 ? (
-                      <p style={{ fontSize: '13px', color: '#666', fontStyle: 'italic', marginLeft: '16px' }}>
-                        Nessun evento in questa categoria
+                      <p style={{ fontSize: '12px', color: '#475569', fontStyle: 'italic', marginLeft: '16px' }}>
+                        No events in this category
                       </p>
                     ) : (
                       group.events.map((event) => (
                         <div
                           key={event.id}
                           style={{
-                            background: event.active ? 'rgba(78, 205, 196, 0.05)' : 'rgba(239, 68, 68, 0.05)',
-                            border: `1.5px solid ${event.active ? 'rgba(78, 205, 196, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
-                            borderRadius: '10px',
-                            padding: '12px',
+                            background: event.active ? 'rgba(59, 130, 246, 0.05)' : 'rgba(100, 100, 100, 0.05)',
+                            border: `1px solid ${event.active ? 'rgba(59, 130, 246, 0.2)' : 'rgba(100, 100, 100, 0.2)'}`,
+                            borderRadius: '8px',
+                            padding: '14px',
                             marginBottom: '8px',
                             marginLeft: '16px',
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ flex: 1 }}>
-                              <h5 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '4px', color: '#fff' }}>
+                              <h5 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '6px', color: '#f1f5f9', letterSpacing: '-0.2px' }}>
                                 {event.name}
                               </h5>
-                              <div style={{ fontSize: '12px', color: '#888' }}>
-                                💰 €{event.basePrice} • {event.active ? '✅ Attivo' : '❌ Disattivo'}
+                              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
+                                  €{event.basePrice}
+                                </span>
+                                <span style={{
+                                  fontSize: '11px',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  background: event.active ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                  color: event.active ? '#22c55e' : '#ef4444',
+                                  fontWeight: '600',
+                                  letterSpacing: '0.3px',
+                                }}>
+                                  {event.active ? 'ACTIVE' : 'INACTIVE'}
+                                </span>
                               </div>
                             </div>
                             
@@ -707,45 +769,47 @@ export default function BookingConfigPage() {
                               <button
                                 onClick={() => toggleEventActive(group.id, event.id)}
                                 style={{
-                                  padding: '6px 10px',
-                                  background: event.active ? 'rgba(239, 68, 68, 0.2)' : 'rgba(78, 205, 196, 0.2)',
-                                  border: 'none',
+                                  padding: '6px 12px',
+                                  background: event.active ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                                  border: `1px solid ${event.active ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
                                   borderRadius: '6px',
-                                  color: event.active ? '#ef4444' : '#4ecdc4',
+                                  color: event.active ? '#ef4444' : '#22c55e',
                                   fontSize: '11px',
                                   fontWeight: '600',
                                   cursor: 'pointer',
                                 }}
                               >
-                                {event.active ? 'OFF' : 'ON'}
+                                {event.active ? 'Disable' : 'Enable'}
                               </button>
                               <button
                                 onClick={() => handleEditEvent(group.id, event)}
                                 style={{
-                                  padding: '6px 10px',
-                                  background: 'rgba(78, 205, 196, 0.2)',
-                                  border: 'none',
+                                  padding: '6px 12px',
+                                  background: 'rgba(59, 130, 246, 0.15)',
+                                  border: '1px solid rgba(59, 130, 246, 0.3)',
                                   borderRadius: '6px',
-                                  color: '#4ecdc4',
+                                  color: '#60a5fa',
                                   fontSize: '11px',
+                                  fontWeight: '600',
                                   cursor: 'pointer',
                                 }}
                               >
-                                ✏️
+                                Edit
                               </button>
                               <button
                                 onClick={() => handleDeleteEvent(group.id, event.id)}
                                 style={{
-                                  padding: '6px 10px',
-                                  background: 'rgba(239, 68, 68, 0.2)',
-                                  border: 'none',
+                                  padding: '6px 12px',
+                                  background: 'rgba(239, 68, 68, 0.15)',
+                                  border: '1px solid rgba(239, 68, 68, 0.3)',
                                   borderRadius: '6px',
                                   color: '#ef4444',
                                   fontSize: '11px',
+                                  fontWeight: '600',
                                   cursor: 'pointer',
                                 }}
                               >
-                                🗑️
+                                Delete
                               </button>
                             </div>
                           </div>
@@ -758,34 +822,39 @@ export default function BookingConfigPage() {
 
               {/* Form Aggiungi/Modifica Evento */}
               <div className="card" style={{ 
-                background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
-                border: '2px solid rgba(78, 205, 196, 0.2)',
-                borderRadius: '16px',
-                padding: '24px',
+                background: 'rgba(30, 30, 35, 0.5)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                padding: '28px',
               }}>
-                <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '20px', color: '#4ecdc4' }}>
-                  {isEditingEvent ? '✏️ Modifica Evento' : '➕ Nuovo Evento'}
-                </h3>
+                <div style={{ marginBottom: '24px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '4px', letterSpacing: '-0.3px' }}>
+                    {isEditingEvent ? 'Edit Event' : 'New Event'}
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#64748b', fontWeight: '400' }}>
+                    {isEditingEvent ? 'Update event information' : 'Create a new event in your catalog'}
+                  </p>
+                </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                   <div>
-                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Categoria *
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '8px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                      Category *
                     </label>
                     <select
                       value={eventForm.groupId}
                       onChange={(e) => setEventForm({ ...eventForm, groupId: parseInt(e.target.value) })}
                       style={{
                         width: '100%',
-                        padding: '14px',
-                        background: '#1a1a1e',
-                        border: '1.5px solid #2a3a52',
-                        borderRadius: '10px',
-                        color: '#fff',
-                        fontSize: '15px',
+                        padding: '12px 14px',
+                        background: 'rgba(15, 15, 20, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        color: '#f1f5f9',
+                        fontSize: '14px',
                       }}
                     >
-                      <option value={0}>-- Seleziona Categoria --</option>
+                      <option value={0}>-- Select Category --</option>
                       {eventsGroups.map((group) => (
                         <option key={group.id} value={group.id}>
                           {group.group}
@@ -795,29 +864,29 @@ export default function BookingConfigPage() {
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Nome Evento *
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '8px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                      Event Name *
                     </label>
                     <input
                       type="text"
                       value={eventForm.name}
                       onChange={(e) => setEventForm({ ...eventForm, name: e.target.value })}
-                      placeholder="es. Tantra"
+                      placeholder="Enter event name"
                       style={{
                         width: '100%',
-                        padding: '14px',
-                        background: '#1a1a1e',
-                        border: '1.5px solid #2a3a52',
-                        borderRadius: '10px',
-                        color: '#fff',
-                        fontSize: '15px',
+                        padding: '12px 14px',
+                        background: 'rgba(15, 15, 20, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        color: '#f1f5f9',
+                        fontSize: '14px',
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Prezzo Base (€) *
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '8px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                      Base Price (€) *
                     </label>
                     <input
                       type="number"
@@ -826,76 +895,81 @@ export default function BookingConfigPage() {
                       placeholder="50"
                       style={{
                         width: '100%',
-                        padding: '14px',
-                        background: '#1a1a1e',
-                        border: '1.5px solid #2a3a52',
-                        borderRadius: '10px',
-                        color: '#fff',
-                        fontSize: '15px',
+                        padding: '12px 14px',
+                        background: 'rgba(15, 15, 20, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        color: '#f1f5f9',
+                        fontSize: '14px',
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Descrizione
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '8px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                      Description
                     </label>
                     <textarea
                       value={eventForm.description}
                       onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                      placeholder="Descrizione evento..."
+                      placeholder="Event description..."
                       rows={3}
                       style={{
                         width: '100%',
-                        padding: '14px',
-                        background: '#1a1a1e',
-                        border: '1.5px solid #2a3a52',
-                        borderRadius: '10px',
-                        color: '#fff',
+                        padding: '12px 14px',
+                        background: 'rgba(15, 15, 20, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        color: '#f1f5f9',
                         fontSize: '14px',
                         resize: 'vertical',
+                        fontFamily: 'inherit',
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '13px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                      Orari Disponibili
+                    <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '10px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                      Available Times
                     </label>
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
                       gap: '8px',
                       padding: '12px',
-                      background: 'rgba(255, 255, 255, 0.02)',
+                      background: 'rgba(15, 15, 20, 0.3)',
                       borderRadius: '8px',
-                      marginBottom: '8px',
+                      marginBottom: '10px',
+                      minHeight: '46px',
                     }}>
                       {eventForm.availableTimes.map((time) => (
                         <span
                           key={time}
                           style={{
                             padding: '6px 12px',
-                            background: 'rgba(78, 205, 196, 0.2)',
-                            border: '1px solid rgba(78, 205, 196, 0.4)',
+                            background: 'rgba(59, 130, 246, 0.15)',
+                            border: '1px solid rgba(59, 130, 246, 0.3)',
                             borderRadius: '6px',
-                            color: '#4ecdc4',
+                            color: '#60a5fa',
                             fontSize: '12px',
                             fontWeight: '600',
                             cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
                           }}
                           onClick={() => handleRemoveTimeFromEvent(time)}
                         >
-                          {time} ✕
+                          {time} <span style={{ color: '#ef4444', fontSize: '14px' }}>×</span>
                         </span>
                       ))}
                       {eventForm.availableTimes.length === 0 && (
-                        <span style={{ fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
-                          Nessun orario selezionato
+                        <span style={{ fontSize: '12px', color: '#475569', fontStyle: 'italic' }}>
+                          No times selected
                         </span>
                       )}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '7px' }}>
                       {['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00'].map((time) => (
                         <button
                           key={time}
@@ -903,11 +977,12 @@ export default function BookingConfigPage() {
                           disabled={eventForm.availableTimes.includes(time)}
                           style={{
                             padding: '8px',
-                            background: eventForm.availableTimes.includes(time) ? 'rgba(100, 100, 100, 0.2)' : 'rgba(78, 205, 196, 0.1)',
-                            border: '1px solid rgba(78, 205, 196, 0.3)',
+                            background: eventForm.availableTimes.includes(time) ? 'rgba(100, 100, 100, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                            border: `1px solid ${eventForm.availableTimes.includes(time) ? 'rgba(100, 100, 100, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`,
                             borderRadius: '6px',
-                            color: eventForm.availableTimes.includes(time) ? '#666' : '#4ecdc4',
+                            color: eventForm.availableTimes.includes(time) ? '#64748b' : '#60a5fa',
                             fontSize: '12px',
+                            fontWeight: '500',
                             cursor: eventForm.availableTimes.includes(time) ? 'not-allowed' : 'pointer',
                           }}
                         >
@@ -917,15 +992,22 @@ export default function BookingConfigPage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '10px',
+                    padding: '14px',
+                    background: 'rgba(15, 15, 20, 0.3)',
+                    borderRadius: '8px',
+                  }}>
                     <input
                       type="checkbox"
                       checked={eventForm.active}
                       onChange={(e) => setEventForm({ ...eventForm, active: e.target.checked })}
-                      style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                     />
-                    <label style={{ fontSize: '15px', color: '#fff' }}>
-                      Evento Attivo
+                    <label style={{ fontSize: '14px', color: '#f1f5f9', fontWeight: '500' }}>
+                      Active Event
                     </label>
                   </div>
 
@@ -933,20 +1015,21 @@ export default function BookingConfigPage() {
                     onClick={isEditingEvent ? handleUpdateEvent : handleAddEvent}
                     disabled={!eventForm.name || !eventForm.basePrice || !eventForm.groupId}
                     style={{
-                      padding: '16px',
+                      padding: '14px',
                       background: (!eventForm.name || !eventForm.basePrice || !eventForm.groupId)
-                        ? 'rgba(100, 100, 100, 0.3)'
-                        : 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+                        ? 'rgba(100, 100, 100, 0.2)'
+                        : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
                       border: 'none',
-                      borderRadius: '10px',
+                      borderRadius: '8px',
                       color: '#fff',
-                      fontWeight: '700',
-                      fontSize: '16px',
+                      fontWeight: '600',
+                      fontSize: '14px',
                       cursor: (!eventForm.name || !eventForm.basePrice || !eventForm.groupId) ? 'not-allowed' : 'pointer',
-                      marginTop: '10px',
+                      marginTop: '6px',
+                      letterSpacing: '0.3px',
                     }}
                   >
-                    {isEditingEvent ? '✅ Aggiorna Evento' : '➕ Aggiungi Evento'}
+                    {isEditingEvent ? 'Update Event' : 'Create Event'}
                   </button>
 
                   {isEditingEvent && (
@@ -958,16 +1041,16 @@ export default function BookingConfigPage() {
                       }}
                       style={{
                         padding: '12px',
-                        background: 'rgba(239, 68, 68, 0.2)',
+                        background: 'rgba(239, 68, 68, 0.15)',
                         border: '1px solid rgba(239, 68, 68, 0.3)',
-                        borderRadius: '10px',
+                        borderRadius: '8px',
                         color: '#ef4444',
                         fontWeight: '600',
                         fontSize: '14px',
                         cursor: 'pointer',
                       }}
                     >
-                      ❌ Annulla Modifica
+                      Cancel Edit
                     </button>
                   )}
                 </div>
@@ -978,24 +1061,27 @@ export default function BookingConfigPage() {
 
         {activeTab === 'fields' && (
           <div className="card" style={{ 
-            background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
-            border: '2px solid rgba(78, 205, 196, 0.2)',
-            borderRadius: '16px',
-            padding: '24px',
+            background: 'rgba(30, 30, 35, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '12px',
+            padding: '28px',
           }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#4ecdc4' }}>
-              📝 Configurazione Campi Form
-            </h3>
+            <div style={{ marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '4px', letterSpacing: '-0.3px' }}>
+                Form Fields Configuration
+              </h3>
+              <p style={{ fontSize: '13px', color: '#64748b', fontWeight: '400' }}>Customize form fields visibility and requirements</p>
+            </div>
 
-            <div style={{ display: 'grid', gap: '16px' }}>
+            <div style={{ display: 'grid', gap: '12px' }}>
               {Object.entries(fieldConfig).map(([fieldName, config]) => (
                 <div key={fieldName} style={{
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '12px',
-                  padding: '20px',
+                  background: 'rgba(15, 15, 20, 0.4)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
+                  borderRadius: '10px',
+                  padding: '18px',
                   display: 'grid',
-                  gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                  gridTemplateColumns: '2fr 1fr 1fr 80px',
                   alignItems: 'center',
                   gap: '16px',
                 }}>
@@ -1006,15 +1092,16 @@ export default function BookingConfigPage() {
                       onChange={(e) => updateFieldLabel(fieldName, e.target.value)}
                       style={{
                         width: '100%',
-                        padding: '10px',
-                        background: '#1a1a1e',
-                        border: '1px solid #2a3a52',
-                        borderRadius: '8px',
-                        color: '#fff',
+                        padding: '10px 12px',
+                        background: 'rgba(15, 15, 20, 0.6)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '6px',
+                        color: '#f1f5f9',
                         fontSize: '14px',
+                        fontWeight: '500',
                       }}
                     />
-                    <span style={{ fontSize: '11px', color: '#666', marginTop: '4px', display: 'block' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', marginTop: '5px', display: 'block', fontWeight: '500', letterSpacing: '0.2px' }}>
                       {fieldName}
                     </span>
                   </div>
@@ -1022,53 +1109,60 @@ export default function BookingConfigPage() {
                   <button
                     onClick={() => toggleFieldVisible(fieldName)}
                     style={{
-                      padding: '10px 16px',
-                      background: config.visible ? 'rgba(78, 205, 196, 0.2)' : 'rgba(100, 100, 100, 0.2)',
-                      border: `1px solid ${config.visible ? 'rgba(78, 205, 196, 0.4)' : 'rgba(100, 100, 100, 0.4)'}`,
-                      borderRadius: '8px',
-                      color: config.visible ? '#4ecdc4' : '#888',
-                      fontSize: '13px',
+                      padding: '10px 14px',
+                      background: config.visible ? 'rgba(34, 197, 94, 0.15)' : 'rgba(100, 100, 100, 0.15)',
+                      border: `1px solid ${config.visible ? 'rgba(34, 197, 94, 0.3)' : 'rgba(100, 100, 100, 0.3)'}`,
+                      borderRadius: '7px',
+                      color: config.visible ? '#22c55e' : '#64748b',
+                      fontSize: '12px',
                       fontWeight: '600',
                       cursor: 'pointer',
+                      letterSpacing: '0.3px',
                     }}
                   >
-                    {config.visible ? '👁️ Visibile' : '👁️‍🗨️ Nascosto'}
+                    {config.visible ? 'Visible' : 'Hidden'}
                   </button>
 
                   <button
                     onClick={() => toggleFieldRequired(fieldName)}
                     style={{
-                      padding: '10px 16px',
-                      background: config.required ? 'rgba(239, 68, 68, 0.2)' : 'rgba(100, 100, 100, 0.2)',
-                      border: `1px solid ${config.required ? 'rgba(239, 68, 68, 0.4)' : 'rgba(100, 100, 100, 0.4)'}`,
-                      borderRadius: '8px',
-                      color: config.required ? '#ef4444' : '#888',
-                      fontSize: '13px',
+                      padding: '10px 14px',
+                      background: config.required ? 'rgba(239, 68, 68, 0.15)' : 'rgba(100, 100, 100, 0.15)',
+                      border: `1px solid ${config.required ? 'rgba(239, 68, 68, 0.3)' : 'rgba(100, 100, 100, 0.3)'}`,
+                      borderRadius: '7px',
+                      color: config.required ? '#ef4444' : '#64748b',
+                      fontSize: '12px',
                       fontWeight: '600',
                       cursor: 'pointer',
+                      letterSpacing: '0.3px',
                     }}
                   >
-                    {config.required ? '⚠️ Obbligatorio' : '➖ Facoltativo'}
+                    {config.required ? 'Required' : 'Optional'}
                   </button>
 
-                  <div style={{ fontSize: '12px', color: '#888', textAlign: 'center' }}>
-                    {config.visible && config.required && '✅'}
-                    {config.visible && !config.required && '📋'}
-                    {!config.visible && '❌'}
+                  <div style={{ 
+                    fontSize: '13px', 
+                    color: '#94a3b8', 
+                    textAlign: 'center',
+                    fontWeight: '600',
+                  }}>
+                    {config.visible && config.required && <span style={{ color: '#22c55e' }}>✓</span>}
+                    {config.visible && !config.required && <span style={{ color: '#60a5fa' }}>○</span>}
+                    {!config.visible && <span style={{ color: '#64748b' }}>-</span>}
                   </div>
                 </div>
               ))}
             </div>
 
             <div style={{
-              marginTop: '24px',
-              padding: '16px',
-              background: 'rgba(78, 205, 196, 0.1)',
-              border: '1px solid rgba(78, 205, 196, 0.3)',
-              borderRadius: '10px',
+              marginTop: '20px',
+              padding: '14px 18px',
+              background: 'rgba(59, 130, 246, 0.05)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              borderRadius: '8px',
             }}>
-              <p style={{ fontSize: '13px', color: '#4ecdc4', lineHeight: '1.6', margin: 0 }}>
-                💡 <strong>Info:</strong> Modifica le etichette, rendi i campi obbligatori/facoltativi o nascondili completamente dal form di prenotazione.
+              <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: '1.6', margin: 0 }}>
+                <strong style={{ color: '#60a5fa' }}>Note:</strong> Customize field labels, set fields as required/optional, or hide them completely from the booking form.
               </p>
             </div>
           </div>
@@ -1076,22 +1170,25 @@ export default function BookingConfigPage() {
 
         {activeTab === 'pricing' && (
           <div className="card" style={{ 
-            background: 'linear-gradient(135deg, rgba(26, 26, 30, 0.95), rgba(15, 15, 18, 0.95))',
-            border: '2px solid rgba(16, 185, 129, 0.2)',
-            borderRadius: '16px',
-            padding: '24px',
-            maxWidth: '800px',
+            background: 'rgba(30, 30, 35, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '12px',
+            padding: '28px',
+            maxWidth: '900px',
           }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#10b981' }}>
-              💰 Configurazione Prezzi Dinamici
-            </h3>
+            <div style={{ marginBottom: '28px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '4px', letterSpacing: '-0.3px' }}>
+                Dynamic Pricing Configuration
+              </h3>
+              <p style={{ fontSize: '13px', color: '#64748b', fontWeight: '400' }}>Configure pricing multipliers and tax rates</p>
+            </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                  Moltiplicatore Weekend (Ven-Sab)
+                <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '12px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                  Weekend Multiplier (Fri-Sat)
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <input
                     type="range"
                     min="1"
@@ -1099,19 +1196,29 @@ export default function BookingConfigPage() {
                     step="0.05"
                     value={pricingConfig.weekendMultiplier}
                     onChange={(e) => setPricingConfig({ ...pricingConfig, weekendMultiplier: parseFloat(e.target.value) })}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, height: '6px' }}
                   />
-                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#10b981', minWidth: '80px' }}>
-                    x{pricingConfig.weekendMultiplier.toFixed(2)} (+{((pricingConfig.weekendMultiplier - 1) * 100).toFixed(0)}%)
+                  <span style={{ 
+                    fontSize: '16px', 
+                    fontWeight: '600', 
+                    color: '#60a5fa', 
+                    minWidth: '110px',
+                    padding: '8px 16px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    textAlign: 'center',
+                  }}>
+                    ×{pricingConfig.weekendMultiplier.toFixed(2)} <span style={{ fontSize: '12px', color: '#94a3b8' }}>(+{((pricingConfig.weekendMultiplier - 1) * 100).toFixed(0)}%)</span>
                   </span>
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                  Moltiplicatore Orario Serale
+                <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '12px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                  Evening Hours Multiplier
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <input
                     type="range"
                     min="1"
@@ -1119,19 +1226,29 @@ export default function BookingConfigPage() {
                     step="0.05"
                     value={pricingConfig.eveningMultiplier}
                     onChange={(e) => setPricingConfig({ ...pricingConfig, eveningMultiplier: parseFloat(e.target.value) })}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, height: '6px' }}
                   />
-                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#10b981', minWidth: '80px' }}>
-                    x{pricingConfig.eveningMultiplier.toFixed(2)} (+{((pricingConfig.eveningMultiplier - 1) * 100).toFixed(0)}%)
+                  <span style={{ 
+                    fontSize: '16px', 
+                    fontWeight: '600', 
+                    color: '#60a5fa', 
+                    minWidth: '110px',
+                    padding: '8px 16px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    textAlign: 'center',
+                  }}>
+                    ×{pricingConfig.eveningMultiplier.toFixed(2)} <span style={{ fontSize: '12px', color: '#94a3b8' }}>(+{((pricingConfig.eveningMultiplier - 1) * 100).toFixed(0)}%)</span>
                   </span>
                 </div>
               </div>
 
               <div>
-                <label style={{ fontSize: '14px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                  Percentuale Tasse
+                <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '12px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                  Tax Rate
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <input
                     type="range"
                     min="0"
@@ -1139,18 +1256,28 @@ export default function BookingConfigPage() {
                     step="0.01"
                     value={pricingConfig.taxRate}
                     onChange={(e) => setPricingConfig({ ...pricingConfig, taxRate: parseFloat(e.target.value) })}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, height: '6px' }}
                   />
-                  <span style={{ fontSize: '18px', fontWeight: '700', color: '#10b981', minWidth: '80px' }}>
+                  <span style={{ 
+                    fontSize: '16px', 
+                    fontWeight: '600', 
+                    color: '#60a5fa', 
+                    minWidth: '110px',
+                    padding: '8px 16px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    textAlign: 'center',
+                  }}>
                     {(pricingConfig.taxRate * 100).toFixed(0)}%
                   </span>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                    Ora Inizio Serale
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '10px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                    Evening Start Hour
                   </label>
                   <input
                     type="number"
@@ -1160,19 +1287,19 @@ export default function BookingConfigPage() {
                     onChange={(e) => setPricingConfig({ ...pricingConfig, eveningStartHour: parseInt(e.target.value) })}
                     style={{
                       width: '100%',
-                      padding: '14px',
-                      background: '#1a1a1e',
-                      border: '1.5px solid #2a3a52',
-                      borderRadius: '10px',
-                      color: '#fff',
-                      fontSize: '15px',
+                      padding: '12px 14px',
+                      background: 'rgba(15, 15, 20, 0.6)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      color: '#f1f5f9',
+                      fontSize: '14px',
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '14px', fontWeight: '600', color: '#888', display: 'block', marginBottom: '8px' }}>
-                    Ora Fine Serale
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', display: 'block', marginBottom: '10px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                    Evening End Hour
                   </label>
                   <input
                     type="number"
@@ -1182,27 +1309,28 @@ export default function BookingConfigPage() {
                     onChange={(e) => setPricingConfig({ ...pricingConfig, eveningEndHour: parseInt(e.target.value) })}
                     style={{
                       width: '100%',
-                      padding: '14px',
-                      background: '#1a1a1e',
-                      border: '1.5px solid #2a3a52',
-                      borderRadius: '10px',
-                      color: '#fff',
-                      fontSize: '15px',
+                      padding: '12px 14px',
+                      background: 'rgba(15, 15, 20, 0.6)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      color: '#f1f5f9',
+                      fontSize: '14px',
                     }}
                   />
                 </div>
               </div>
 
               <div style={{
-                padding: '16px',
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
+                padding: '18px',
+                background: 'rgba(59, 130, 246, 0.05)',
+                border: '1px solid rgba(59, 130, 246, 0.2)',
                 borderRadius: '10px',
               }}>
-                <p style={{ fontSize: '13px', color: '#10b981', lineHeight: '1.6', margin: 0 }}>
-                  📊 <strong>Esempio:</strong> Un evento da €100 nel weekend alle 22:00 costerà:<br/>
-                  €100 × {pricingConfig.weekendMultiplier.toFixed(2)} (weekend) × {pricingConfig.eveningMultiplier.toFixed(2)} (serale) = €{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier).toFixed(2)}<br/>
-                  + Tasse ({(pricingConfig.taxRate * 100).toFixed(0)}%) = €{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier * (1 + pricingConfig.taxRate)).toFixed(2)} <strong>Totale</strong>
+                <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.8', margin: 0, fontWeight: '400' }}>
+                  <strong style={{ color: '#60a5fa', fontWeight: '600' }}>Calculation Example:</strong><br/>
+                  Base price €100 on weekend at 22:00:<br/>
+                  <span style={{ color: '#f1f5f9' }}>€100 × {pricingConfig.weekendMultiplier.toFixed(2)} (weekend) × {pricingConfig.eveningMultiplier.toFixed(2)} (evening) = €{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier).toFixed(2)}</span><br/>
+                  <span style={{ color: '#f1f5f9' }}>+ Tax ({(pricingConfig.taxRate * 100).toFixed(0)}%) = <strong style={{ color: '#60a5fa' }}>€{(100 * pricingConfig.weekendMultiplier * pricingConfig.eveningMultiplier * (1 + pricingConfig.taxRate)).toFixed(2)}</strong></span>
                 </p>
               </div>
             </div>
@@ -1239,8 +1367,8 @@ export default function BookingConfigPage() {
                         <h4 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '6px', color: '#fff' }}>
                           {event.name}
                         </h4>
-                        <div style={{ display: 'flex', gap: '12px', fontSize: '13px', color: '#888' }}>
-                          <span>💰 €{event.basePrice}</span>
+                        <div style={{ display: 'flex', gap: '12px', fontSize: '13px', color: '#888', alignItems: 'center' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><DollarSign size={14} color="#c89664" /> €{event.basePrice}</span>
                           <span>📁 {event.category}</span>
                         </div>
                       </div>
@@ -1249,10 +1377,13 @@ export default function BookingConfigPage() {
                         borderRadius: '20px',
                         fontSize: '12px',
                         fontWeight: '600',
-                        background: event.active ? 'rgba(78, 205, 196, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                        color: event.active ? '#4ecdc4' : '#ef4444',
+                        background: event.active ? 'rgba(200, 150, 100, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: event.active ? '#c89664' : '#ef4444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
                       }}>
-                        {event.active ? '✅ Attivo' : '❌ Non Attivo'}
+                        {event.active ? <><Check size={14} /> Attivo</> : <><X size={14} /> Non Attivo</>}
                       </span>
                     </div>
 
@@ -1400,7 +1531,7 @@ export default function BookingConfigPage() {
             bottom: 30px;
             right: 30px;
             display: flex;
-            gap: 12px;
+            gap: 14px;
             z-index: 1000;
           }
           @media (max-width: 768px) {
@@ -1412,7 +1543,7 @@ export default function BookingConfigPage() {
             }
             .action-buttons button {
               padding: 12px 16px !important;
-              font-size: 14px !important;
+              font-size: 13px !important;
               flex: 1;
             }
           }
@@ -1421,35 +1552,91 @@ export default function BookingConfigPage() {
           <button
             onClick={resetConfiguration}
             style={{
-              padding: '16px 24px',
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-              border: 'none',
-              borderRadius: '12px',
-              color: '#fff',
-              fontWeight: '700',
-              fontSize: '15px',
+              padding: '14px 24px',
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '10px',
+              color: '#ef4444',
+              fontWeight: '600',
+              fontSize: '14px',
               cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(239, 68, 68, 0.3)',
+              letterSpacing: '0.3px',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
             }}
           >
-            🔄 Reset Config
+            Reset Configuration
           </button>
           
           <button
             onClick={saveConfiguration}
             style={{
-              padding: '16px 32px',
-              background: 'linear-gradient(135deg, #4ecdc4, #44a08d)',
+              padding: '14px 32px',
+              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
               border: 'none',
-              borderRadius: '12px',
-              color: '#0f1419',
-              fontWeight: '700',
-              fontSize: '16px',
+              borderRadius: '10px',
+              color: '#fff',
+              fontWeight: '600',
+              fontSize: '14px',
               cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(78, 205, 196, 0.3)',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+              letterSpacing: '0.3px',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
             }}
           >
-            💾 Salva Configurazione
+            Save Configuration
+          </button>
+        </div>
+
+        {/* Logout Button - Mobile */}
+        <div style={{ 
+          marginTop: '40px', 
+          marginBottom: '100px',
+          display: 'block',
+        }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              width: '100%',
+              padding: '16px',
+              background: 'rgba(244, 67, 54, 0.1)',
+              border: '1px solid rgba(244, 67, 54, 0.3)',
+              borderRadius: '12px',
+              color: '#f44336',
+              fontSize: '14px',
+              fontWeight: '400',
+              letterSpacing: '1.5px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(244, 67, 54, 0.2)';
+              e.currentTarget.style.borderColor = 'rgba(244, 67, 54, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(244, 67, 54, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(244, 67, 54, 0.3)';
+            }}
+          >
+            <LogOut size={18} />
+            <span>LOGOUT</span>
           </button>
         </div>
       </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import { Banknote, CreditCard, Building2, Wallet } from 'lucide-react';
+
 interface Transaction {
   id: string;
   name: string;
@@ -36,26 +38,28 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
     switch (method?.toLowerCase()) {
       case 'cash':
       case 'contanti':
-        return '💵';
+        return <Banknote size={16} color="#c89664" />;
       case 'card':
       case 'carta':
-        return '💳';
+        return <CreditCard size={16} color="#c89664" />;
       case 'transfer':
       case 'bonifico':
-        return '🏦';
+        return <Building2 size={16} color="#c89664" />;
       default:
-        return '💰';
+        return <Wallet size={16} color="#c89664" />;
     }
   };
 
   return (
     <div style={{
-      background: 'rgba(20, 20, 20, 0.6)',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(200, 150, 100, 0.3)',
-      borderRadius: '12px',
-      padding: '30px',
-      marginBottom: '30px',
+      background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%)',
+      backdropFilter: 'blur(30px)',
+      border: '2px solid rgba(200, 150, 100, 0.25)',
+      borderRadius: '24px',
+      padding: '36px',
+      marginBottom: '32px',
+      boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+      transition: 'all 0.4s ease',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <h3 style={{ 

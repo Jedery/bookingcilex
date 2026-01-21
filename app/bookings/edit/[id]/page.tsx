@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useAuth } from '../../../context/AuthContext';
 import Sidebar from '../../../components/Sidebar';
 import { useTranslation } from '../../../i18n/useTranslation';
+import { Calendar, Wallet, User } from 'lucide-react';
 
 export default function EditBooking() {
   const router = useRouter();
@@ -73,7 +74,7 @@ export default function EditBooking() {
       }
     } catch (error) {
       console.error('Error fetching booking:', error);
-      alert('❌ Errore nel caricamento della prenotazione');
+      alert('Errore nel caricamento della prenotazione');
     } finally {
       setLoading(false);
     }
@@ -83,7 +84,7 @@ export default function EditBooking() {
     e.preventDefault();
     
     if (user?.role !== 'SuperAdmin') {
-      alert('❌ Solo il SuperAdmin può modificare le prenotazioni');
+      alert('Solo il SuperAdmin può modificare le prenotazioni');
       return;
     }
 
@@ -111,7 +112,7 @@ export default function EditBooking() {
       }
     } catch (error) {
       console.error('Error updating booking:', error);
-      alert('❌ Si è verificato un errore');
+      alert('Si è verificato un errore');
     } finally {
       setSaving(false);
     }
@@ -194,8 +195,17 @@ export default function EditBooking() {
               borderRadius: '16px',
               padding: '24px',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#c89664' }}>
-                👤 Dettagli Cliente
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <User size={20} color="#c89664" />
+                Dettagli Cliente
               </h3>
 
               <div className="filter-group" style={{ marginBottom: '16px' }}>
@@ -304,8 +314,17 @@ export default function EditBooking() {
               borderRadius: '16px',
               padding: '24px',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#c89664' }}>
-                📅 Dettagli Evento
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Calendar size={20} color="#c89664" />
+                Dettagli Evento
               </h3>
 
               <div className="filter-group" style={{ marginBottom: '16px' }}>
@@ -393,8 +412,17 @@ export default function EditBooking() {
               borderRadius: '16px',
               padding: '24px',
             }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '24px', color: '#c89664' }}>
-                💰 Pagamento
+              <h3 style={{ 
+                fontSize: '18px', 
+                fontWeight: '600', 
+                marginBottom: '24px', 
+                color: '#c89664',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                <Wallet size={20} color="#c89664" />
+                Pagamento
               </h3>
 
               <div className="filter-group" style={{ marginBottom: '16px' }}>
